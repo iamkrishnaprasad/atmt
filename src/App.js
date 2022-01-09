@@ -9,6 +9,9 @@ function App() {
         <p>
           Hello World !
         </p>
+        <p>
+          Invoice system
+        </p>
         <a
           className="App-link"
           href="https://reactjs.org"
