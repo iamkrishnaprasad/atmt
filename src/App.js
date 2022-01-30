@@ -1,19 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-props-no-spreading */
+// -- React and related libs
+import React from 'react';
+import { Switch, Route, Redirect } from 'react-router';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-function App() {
+// -- Redux
+import { connect } from 'react-redux';
+
+// -- Third Party Libs
+import { ToastContainer } from 'react-toastify';
+
+// -- Custom Components
+import LayoutComponent from './components/Layout';
+import ErrorPage from './pages/error';
+import LoginPage from './pages/login';
+
+// -- Redux Actions
+import { logoutUser } from './redux';
+
+// -- Services
+import { hasToken } from './services/authServices';
+
+// -- Component Styles
+import './styles/app.scss';
+
+function PrivateRoute({ dispatch, component, ...rest }) {
+  if (!hasToken()) {
+    dispatch(logoutUser());
+    return <Redirect to="/login" />;
+  }
+  return <Route {...rest} render={(props) => React.createElement(component, props)} />;
+}
+
+function App(props) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World !</p>
-        <p>Invoice system</p>
-        <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <ToastContainer />
+        <Switch>
+          <Route exact path="/login" component={LoginPage} />
+          <Route exact path="/error" component={ErrorPage} />
+          <PrivateRoute path="/" dispatch={props.dispatch} component={LayoutComponent} />
+          {/* <Route component={ErrorPage} />
+          <Route path="*" exact render={() => <Redirect to="/error" />} /> */}
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
+
+export default connect(mapStateToProps)(App);
