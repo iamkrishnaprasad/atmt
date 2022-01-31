@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { removeFromLocalStorage, setToLocalStorage } from '../../utils/storage';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS } from './authTypes';
 
@@ -28,6 +29,7 @@ export const logoutUser = () => (dispatch) => {
   dispatch(logoutRequest());
   removeFromLocalStorage('accessToken');
   dispatch(logoutSuccess());
+  toast.success('Logout Successfully');
 };
 
 export const loginUser =
@@ -41,11 +43,14 @@ export const loginUser =
           const { 'x-auth-token': token } = response.headers;
           setToLocalStorage('accessToken', token);
           dispatch(loginSuccess());
+          toast.success('Login Successfully');
         })
         .catch((error) => {
           dispatch(loginFailure(error.response.data.message));
+          toast.error(error.response.data.message);
         });
     } else {
       dispatch(loginFailure('Something went wrong. Try again'));
+      toast.error('Something went wrong. Try again');
     }
   };

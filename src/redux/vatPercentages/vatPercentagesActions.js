@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { API_TIMEOUT } from '../../constant';
 import { getToken } from '../../services/authServices';
 import {
@@ -33,9 +34,11 @@ export const fetchVATPercentages = () => (dispatch) => {
     .get('/api/v1/vatpercentages', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchVATPercentagesSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchVATPercentagesFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -58,11 +61,12 @@ export const addVATPercentage = (payload) => (dispatch) => {
     .post('/api/v1/vatpercentages', payload, { headers: { 'x-auth-token': getToken() }, timeout: API_TIMEOUT })
     .then((response) => {
       dispatch(addVATPercentageSuccess());
-      // toaster => (response.data)
+      toast.success(response.message);
       dispatch(fetchVATPercentages());
     })
     .catch((error) => {
       dispatch(addVATPercentageFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -85,10 +89,11 @@ export const updateVATPercentage = (id, payload) => (dispatch) => {
     .put(`/api/v1/vatpercentages/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateVATPercentageSuccess());
-      // toaster => (response.data)
+      toast.success(response.message);
       dispatch(fetchVATPercentages());
     })
     .catch((error) => {
       dispatch(updateVATPercentageFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

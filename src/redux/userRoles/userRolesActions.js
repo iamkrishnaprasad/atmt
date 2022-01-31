@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_USER_ROLES_REQUEST,
@@ -32,9 +33,11 @@ export const fetchUserRoles = () => (dispatch) => {
     .get('/api/v1/userroles', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchUserRolesSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchUserRolesFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addUserRole = (payload) => (dispatch) => {
     .post('/api/v1/userroles', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addUserRoleSuccess());
+      toast.success(response.message);
       dispatch(fetchUserRoles());
     })
     .catch((error) => {
       dispatch(addUserRoleFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateUserRole = (id, payload) => (dispatch) => {
     .put(`/api/v1/userroles/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateUserRoleSuccess());
+      toast.success(response.message);
       dispatch(fetchUserRoles());
     })
     .catch((error) => {
       dispatch(updateUserRoleFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

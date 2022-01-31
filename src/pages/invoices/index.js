@@ -70,7 +70,7 @@ function InvoicesPage() {
           <Widget>
             <div className={styles.tableTitle}>
               <div className="headline-2">Invoices</div>
-              <div
+              {/* <div
                 onClick={() => {
                   openModal('add');
                 }}
@@ -79,7 +79,7 @@ function InvoicesPage() {
               >
                 <i style={{ margin: '0 10px' }} className="eva eva-plus-square-outline" />
                 <span>Add Invoice</span>
-              </div>
+              </div> */}
             </div>
             <div className="widget-table-overflow">
               <Table className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)} responsive>
@@ -121,15 +121,17 @@ function InvoicesPage() {
                       {/* {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? ( */}
                       <td>
                         <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
-                          <i
+                          {/* <i
                             style={{ cursor: 'pointer' }}
                             className="eva eva-edit-2-outline"
                             onClick={() => {
                               openModal('edit', item);
                             }}
-                          />
+                          /> */}
                           <PDFDownloadLink document={<Template order={item} />} fileName={item?.orderNo}>
-                            {({ loading }) => (loading ? 'Loading document...' : 'Download now!')}
+                            {({ loading }) =>
+                              loading ? 'Loading document...' : <i style={{ cursor: 'pointer' }} className="fa fa-download" />
+                            }
                           </PDFDownloadLink>
                           {/* <i
                             style={{ cursor: 'pointer' }}

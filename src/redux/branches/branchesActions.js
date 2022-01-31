@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_BRANCHES_REQUEST,
@@ -32,9 +33,11 @@ export const fetchBranches = () => (dispatch) => {
     .get('/api/v1/branches', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchBranchesSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchBranchesFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addBranch = (payload) => (dispatch) => {
     .post('/api/v1/branches', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addBranchSuccess());
+      toast.success(response.message);
       dispatch(fetchBranches());
     })
     .catch((error) => {
       dispatch(addBranchFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateBranch = (id, payload) => (dispatch) => {
     .put(`/api/v1/branches/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateBranchSuccess());
+      toast.success(response.message);
       dispatch(fetchBranches());
     })
     .catch((error) => {
       dispatch(updateBranchFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

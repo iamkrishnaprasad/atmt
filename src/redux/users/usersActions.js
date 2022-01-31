@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { API_TIMEOUT } from '../../constant';
 import { getToken } from '../../services/authServices';
 import {
@@ -33,9 +34,11 @@ export const fetchUsers = () => (dispatch) => {
     .get('/api/v1/users', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchUsersSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchUsersFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -58,11 +61,12 @@ export const addUser = (payload) => (dispatch) => {
     .post('/api/v1/users', payload, { headers: { 'x-auth-token': getToken() }, timeout: API_TIMEOUT })
     .then((response) => {
       dispatch(addUserSuccess());
-      // toaster => (response.data)
+      toast.success(response.message);
       dispatch(fetchUsers());
     })
     .catch((error) => {
       dispatch(addUserFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -85,10 +89,11 @@ export const updateUser = (id, payload) => (dispatch) => {
     .put(`/api/v1/users/profile/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateUserSuccess());
-      // toaster => (response.data)
+      toast.success(response.message);
       dispatch(fetchUsers());
     })
     .catch((error) => {
       dispatch(updateUserFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

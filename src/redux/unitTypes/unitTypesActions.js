@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_UNIT_TYPES_REQUEST,
@@ -32,9 +33,11 @@ export const fetchUnitTypes = () => (dispatch) => {
     .get('/api/v1/unittypes', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchUnitTypesSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchUnitTypesFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addUnitType = (payload) => (dispatch) => {
     .post('/api/v1/unittypes', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addUnitTypeSuccess());
+      toast.success(response.message);
       dispatch(fetchUnitTypes());
     })
     .catch((error) => {
       dispatch(addUnitTypeFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateUnitType = (id, payload) => (dispatch) => {
     .put(`/api/v1/unittypes/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateUnitTypeSuccess());
+      toast.success(response.message);
       dispatch(fetchUnitTypes());
     })
     .catch((error) => {
       dispatch(updateUnitTypeFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

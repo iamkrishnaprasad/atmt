@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_VENDORS_REQUEST,
@@ -32,9 +33,11 @@ export const fetchVendors = () => (dispatch) => {
     .get('/api/v1/vendors', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchVendorsSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchVendorsFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addVendor = (payload) => (dispatch) => {
     .post('/api/v1/vendors', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addVendorSuccess());
+      toast.success(response.message);
       dispatch(fetchVendors());
     })
     .catch((error) => {
       dispatch(addVendorFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateVendor = (id, payload) => (dispatch) => {
     .put(`/api/v1/vendors/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateVendorSuccess());
+      toast.success(response.message);
       dispatch(fetchVendors());
     })
     .catch((error) => {
       dispatch(updateVendorFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

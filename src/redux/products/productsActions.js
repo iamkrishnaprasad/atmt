@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_PRODUCTS_REQUEST,
@@ -32,9 +33,11 @@ export const fetchProducts = () => (dispatch) => {
     .get('/api/v1/products/all', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchProductsSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchProductsFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addProduct = (payload) => (dispatch) => {
     .post('/api/v1/products', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addProductSuccess());
+      toast.success(response.message);
       dispatch(fetchProducts());
     })
     .catch((error) => {
       dispatch(addProductFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateProduct = (id, payload) => (dispatch) => {
     .put(`/api/v1/products/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateProductSuccess());
+      toast.success(response.message);
       dispatch(fetchProducts());
     })
     .catch((error) => {
       dispatch(updateProductFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

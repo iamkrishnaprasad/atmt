@@ -24,6 +24,7 @@ import { hasToken } from './services/authServices';
 
 // -- Component Styles
 import './styles/app.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 function PrivateRoute({ dispatch, component, ...rest }) {
   if (!hasToken()) {
@@ -37,7 +38,7 @@ function App(props) {
   return (
     <Router>
       <div>
-        <ToastContainer />
+        <ToastContainer autoClose={2000} />
         <Switch>
           <Route exact path="/login" component={LoginPage} />
           <Route exact path="/error" component={ErrorPage} />
