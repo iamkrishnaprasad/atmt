@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_PAYMENT_TERMS_REQUEST,
@@ -32,9 +33,11 @@ export const fetchPaymentTerms = () => (dispatch) => {
     .get('/api/v1/paymentterms', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchPaymentTermsSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchPaymentTermsFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addPaymentTerm = (payload) => (dispatch) => {
     .post('/api/v1/paymentterms', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addPaymentTermSuccess());
+      toast.success(response.message);
       dispatch(fetchPaymentTerms());
     })
     .catch((error) => {
       dispatch(addPaymentTermFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updatePaymentTerm = (id, payload) => (dispatch) => {
     .put(`/api/v1/paymentterms/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updatePaymentTermSuccess());
+      toast.success(response.message);
       dispatch(fetchPaymentTerms());
     })
     .catch((error) => {
       dispatch(updatePaymentTermFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

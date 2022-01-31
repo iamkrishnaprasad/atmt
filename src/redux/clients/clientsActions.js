@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_CLIENTS_REQUEST,
@@ -32,9 +33,11 @@ export const fetchClients = () => (dispatch) => {
     .get('/api/v1/clients', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchClientsSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchClientsFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addClient = (payload) => (dispatch) => {
     .post('/api/v1/clients', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addClientSuccess());
+      toast.success(response.message);
       dispatch(fetchClients());
     })
     .catch((error) => {
       dispatch(addClientFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateClient = (id, payload) => (dispatch) => {
     .put(`/api/v1/clients/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateClientSuccess());
+      toast.success(response.message);
       dispatch(fetchClients());
     })
     .catch((error) => {
       dispatch(updateClientFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

@@ -43,7 +43,7 @@ function ProductsPage() {
   }, []);
 
   const [currentPage, setCurrentPage] = useState(0);
-  const pageSize = 10;
+  const pageSize = 150;
   const pagesCount = Math.ceil(data.length / pageSize);
 
   const setTablePage = (e, index) => {

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_BRANDS_REQUEST,
@@ -32,9 +33,11 @@ export const fetchBrands = () => (dispatch) => {
     .get('/api/v1/brands', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchBrandsSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchBrandsFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addBrand = (payload) => (dispatch) => {
     .post('/api/v1/brands', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addBrandSuccess());
+      toast.success(response.message);
       dispatch(fetchBrands());
     })
     .catch((error) => {
       dispatch(addBrandFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateBrand = (id, payload) => (dispatch) => {
     .put(`/api/v1/brands/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateBrandSuccess());
+      toast.success(response.message);
       dispatch(fetchBrands());
     })
     .catch((error) => {
       dispatch(updateBrandFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

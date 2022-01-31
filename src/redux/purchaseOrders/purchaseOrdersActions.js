@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_PURCHASE_ORDERS_REQUEST,
@@ -32,9 +33,11 @@ export const fetchPurchaseOrders = () => (dispatch) => {
     .get('/api/v1/order/purchases', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchPurchaseOrdersSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchPurchaseOrdersFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addPurchaseOrder = (payload) => (dispatch) => {
     .post('/api/v1/order/purchases', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addPurchaseOrderSuccess());
+      toast.success(response.message);
       dispatch(fetchPurchaseOrders());
     })
     .catch((error) => {
       dispatch(addPurchaseOrderFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updatePurchaseOrder = (id, payload) => (dispatch) => {
     .put(`/api/v1/order/purchases/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updatePurchaseOrderSuccess());
+      toast.success(response.message);
       dispatch(fetchPurchaseOrders());
     })
     .catch((error) => {
       dispatch(updatePurchaseOrderFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

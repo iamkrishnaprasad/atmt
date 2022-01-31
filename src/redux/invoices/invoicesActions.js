@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_INVOICES_REQUEST,
@@ -32,9 +33,11 @@ export const fetchInvoices = () => (dispatch) => {
     .get('/api/v1/invoices', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchInvoicesSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchInvoicesFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -57,10 +60,12 @@ export const addInvoice = (payload) => (dispatch) => {
     .post('/api/v1/invoices', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addInvoiceSuccess());
+      toast.success(response.message);
       dispatch(fetchInvoices());
     })
     .catch((error) => {
       dispatch(addInvoiceFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -83,9 +88,11 @@ export const updateInvoice = (id, payload) => (dispatch) => {
     .put(`/api/v1/invoices/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateInvoiceSuccess());
+      toast.success(response.message);
       dispatch(fetchInvoices());
     })
     .catch((error) => {
       dispatch(updateInvoiceFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
 import {
   FETCH_CATEGORIES_REQUEST,
@@ -29,16 +30,14 @@ export const fetchCategoriesFailure = (error) => ({
 export const fetchCategories = () => (dispatch) => {
   dispatch(fetchCategoriesRequest());
   axios
-    .get('/api/v1/categories', {
-      headers: {
-        'x-auth-token': getToken(),
-      },
-    })
+    .get('/api/v1/categories', { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(fetchCategoriesSuccess(response.data));
+      toast.success(response.message);
     })
     .catch((error) => {
       dispatch(fetchCategoriesFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -61,10 +60,12 @@ export const addCategory = (payload) => (dispatch) => {
     .post('/api/v1/categories', payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(addCategorySuccess());
+      toast.success(response.message);
       dispatch(fetchCategories());
     })
     .catch((error) => {
       dispatch(addCategoryFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
 
@@ -87,9 +88,11 @@ export const updateCategory = (id, payload) => (dispatch) => {
     .put(`/api/v1/categories/${id}`, payload, { headers: { 'x-auth-token': getToken() } })
     .then((response) => {
       dispatch(updateCategorySuccess());
+      toast.success(response.message);
       dispatch(fetchCategories());
     })
     .catch((error) => {
       dispatch(updateCategoryFailure(error.response.data.message));
+      toast.error(error.response.data.message);
     });
 };
