@@ -9,6 +9,8 @@ import locale from '../locale/pdfTemplate.json';
 import CairoRegular from '../assets/fonts/Cairo/Cairo-Regular.ttf';
 import CairoBold from '../assets/fonts/Cairo/Cairo-Bold.ttf';
 
+import toFormattedNumber from '../utils/general';
+
 Font.register({
   family: 'Cairo',
   fonts: [{ src: CairoRegular }, { src: CairoBold, fontWeight: 'bold' }],
@@ -41,21 +43,6 @@ const styles = StyleSheet.create({
   footerText: { color: 'grey' },
 });
 
-const toFormattedNumber = (value = 0) => {
-  value = value.toString();
-  let afterPoint = '';
-  if (value.indexOf('.') > 0) {
-    afterPoint = value.substring(value.indexOf('.'), value.length);
-  }
-  value = Math.floor(value);
-  value = value.toString();
-  let lastThree = value.substring(value.length - 3);
-  const otherNumbers = value.substring(0, value.length - 3);
-  if (otherNumbers !== '') lastThree = `,${lastThree}`;
-
-  return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree + afterPoint;
-};
-
 const getTitle = (orderType) => {
   switch (orderType) {
     case 'Tax Invoice':
@@ -81,7 +68,7 @@ function CompanyDetails({ data }) {
   return (
     <View style={styles.companyDetailsView}>
       {data?.name ? <Text style={styles.companyDetailsNameText}>{data?.name.trim()?.toUpperCase()}</Text> : null}
-      {data?.altName ? <Text style={styles.companyDetailsNameText}>{data?.altName}</Text> : null}
+      {data?.altname ? <Text style={styles.companyDetailsNameText}>{data?.altname}</Text> : null}
       <View style={styles.companyDetailsAddressView}>
         <View>
           {data?.buildingno?.trim()?.length || data?.streetno?.trim()?.length || data?.district?.trim()?.length ? (
@@ -403,7 +390,10 @@ function TableCell({ data, srno }) {
         <Text style={styles.tableText}>{data?.code ?? '-'}</Text>
       </View>
       <View style={[styles.tableCellBox, { width: '170px', paddingLeft: '5px' }]}>
-        <Text style={[styles.tableText, { textAlign: 'left' }]}>{data?.product?.en ?? '-'}</Text>
+        <Text style={[styles.tableText, { textAlign: 'left' }]}>
+          {data?.product?.en}
+          {data?.product?.ar ? ` / ${data?.product?.ar}` : null}
+        </Text>
       </View>
       <View style={[styles.tableCellBox, { width: '28px' }]}>
         <Text style={styles.tableText}>{data?.uom ?? '-'}</Text>
@@ -488,7 +478,14 @@ function Footer({ orderId, orderNo }) {
 
 function Template({ order = '' }) {
   return (
-    <Document title="Invoice" author="https://github.com/krishnaprasad1991" subject="" keywords="" creator="ATMT" producer="ATMT">
+    <Document
+      title={order?.type}
+      author="https://github.com/krishnaprasad1991"
+      subject="Invoice"
+      keywords=""
+      creator="ATMT"
+      producer="ATMT"
+    >
       <Page size="A4" style={styles.page} wrap>
         <Header data={order?.company} />
         <Title orderType={order?.type} />

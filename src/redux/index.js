@@ -14,3 +14,4 @@ export { fetchVendors, addVendor, updateVendor } from './vendors/vendorsActions'
 export { fetchPurchaseOrders, addPurchaseOrder, updatePurchaseOrder } from './purchaseOrders/purchaseOrdersActions';
 export { fetchUnitTypes, addUnitType, updateUnitType } from './unitTypes/unitTypesActions';
 export { fetchInvoices, addInvoice, updateInvoice } from './invoices/invoicesActions';
+export { searchProduct, clearSearchProduct } from './search/searchActions';

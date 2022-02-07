@@ -16,6 +16,7 @@ import profileReducer from './profile/profileReducer';
 import purchaseOrdersReducer from './purchaseOrders/purchaseOrdersReducer';
 import unitTypesReducer from './unitTypes/unitTypesReducer';
 import invoicesReducer from './invoices/invoicesReducer';
+import searchReducer from './search/searchReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   purchaseOrders: purchaseOrdersReducer,
   unitTypes: unitTypesReducer,
   invoices: invoicesReducer,
+  search: searchReducer,
 });
 
 export default rootReducer;

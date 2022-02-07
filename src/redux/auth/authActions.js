@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { hasToken } from '../../services/authServices';
 import { removeFromLocalStorage, setToLocalStorage } from '../../utils/storage';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS } from './authTypes';
 
@@ -27,9 +28,11 @@ export const logoutSuccess = () => ({
 // logs the user out
 export const logoutUser = () => (dispatch) => {
   dispatch(logoutRequest());
+  if (hasToken()) {
+    toast.success('Logout Successfully');
+  }
   removeFromLocalStorage('accessToken');
   dispatch(logoutSuccess());
-  toast.success('Logout Successfully');
 };
 
 export const loginUser =

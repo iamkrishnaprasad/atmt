@@ -3,13 +3,13 @@ export default function validateInfo(values, variant = '') {
   const errors = {};
 
   if (!values?.name?.trim()) {
-    errors.name = 'Vendor name is required';
+    errors.name = 'Vendor name is required.';
   } else if (values?.name?.trim().length < 5) {
     errors.name = 'Vendor name should have atleast 5 characters.';
   }
 
   if (!values?.vatno?.trim()) {
-    errors.vatno = 'VAT no. is required';
+    errors.vatno = 'VAT no. is required.';
   } else if (values?.vatno?.trim().length !== 0 && values?.vatno?.trim().length < 15) {
     errors.vatno = 'Enter a valid VAT no.';
   }

@@ -306,6 +306,10 @@ table > thead > tr > th {
       td {
         color: white;
       }
+
+      .fa {
+        color: white;
+      }
     }
   }
 }
@@ -602,4 +606,9 @@ input[type='checkbox'] .styled:checked + label::after {
   @media (max-width: breakpoint-max(xs)) {
     display: none;
   }
+}
+
+.modal-backdrop {
+  width: 100%;
+  height: 100%;
 }
