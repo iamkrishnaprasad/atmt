@@ -45,6 +45,7 @@ import { getProfileData } from '../../services/profile';
 function Layout() {
   const profile = getProfileData();
   const dispatch = useDispatch();
+
   useEffect(() => {
     if (profile.length === 0) {
       dispatch(fetchProfile());
@@ -60,6 +61,16 @@ function Layout() {
     dispatch(fetchBranches());
     dispatch(fetchUserRoles());
     dispatch(fetchUnitTypes());
+
+    const initialValue = document.body.style.zoom;
+
+    // Change zoom level on mount
+    document.body.style.zoom = '65%';
+
+    return () => {
+      // Restore default value
+      document.body.style.zoom = initialValue;
+    };
   }, []);
   return (
     <div className={styles.root}>

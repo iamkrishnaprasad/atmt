@@ -1,5 +1,8 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-param-reassign */
+import classNames from 'classnames';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
   Col,
@@ -7,17 +10,19 @@ import {
   FormFeedback,
   FormGroup,
   Input,
-  InputGroup,
-  InputGroupText,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   Row,
+  Table,
 } from 'reactstrap';
-
-// import validate from './validateInfo';
+import { searchProduct } from '../../redux';
+import styles from '../../components/Tables/Tables.module.scss';
+import AutoComplete from './AutoComplete';
+import validate from './validateInfo';
+import { getUserBranchId } from '../../services/profile';
 
 function getTitle(variant) {
   switch (variant) {
@@ -34,6 +39,23 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const userBranchId = getUserBranchId();
+
+  const [items, setItems] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const addItem = (item) => {
+    const isItemExist = !!items.filter((i) => i.productId === item.productId)?.length;
+    if (!isItemExist) {
+      const updatedItem = { ...item, quantity: 1, sellingPrice: item.unitSellingPrice };
+      setItems([...items, updatedItem]);
+    }
+  };
+
+  const searchKeyword = (keyword) => {
+    dispatch(searchProduct({ keyword }));
+  };
 
   useEffect(() => {
     setValues(data);
@@ -46,7 +68,8 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // setErrors(validate(values, variant));
+    setValues({ ...values, branchId: userBranchId });
+    setErrors(validate({ ...values, items }, variant));
     setIsSubmitting(true);
   };
 
@@ -57,390 +80,426 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
     toggle();
   };
 
+  const removeKey = (objects, key) =>
+    objects.map((object) => {
+      if (typeof key === 'string') {
+        if (key in object) {
+          delete object[key];
+        }
+        return object;
+      }
+      return object;
+    });
+
   useEffect(() => {
     if (Object.keys(errors).length === 0 && isSubmitting) {
-      onSubmit(values);
+      let updatedItems = JSON.parse(JSON.stringify(items));
+      ['name', 'marginPrice', 'stockAvailable', 'unitSellingPrice'].forEach((key) => {
+        updatedItems = removeKey(updatedItems, key);
+      });
+      onSubmit({ ...values, items: updatedItems });
       setIsSubmitting(false);
       setErrors({});
       toggle();
     }
   }, [errors]);
 
+  const paymentTerms = useSelector((state) => state.paymentTerms.data);
+  const clients = useSelector((state) => state.clients.data);
+  const searchList = useSelector((state) => state.search.data);
+  const vatPercentages = useSelector((state) => state.vatPercentages.data);
+
+  const getVATPercentageById = (id) => {
+    if (vatPercentages.length > 0) {
+      return vatPercentages?.find((vatPercentage) => vatPercentage.id === id)?.vatPercentage ?? null;
+    }
+    return null;
+  };
+
+  const floatRegExp = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/;
+
+  // const handledItemChange = (e, id) => {
+  //   const { name, value } = e.target;
+
+  //   switch (name) {
+  //     case 'discountPrice':
+  //       setItems((prev) =>
+  //         prev.map((item) => {
+  //           if (item.productId === id) {
+  //             if (value === '' || floatRegExp.test(value)) {
+  //               if (parseFloat(value) >= 0) {
+  //                 if (item.marginPrice >= parseFloat(value)) {
+  //                   return { ...item, discountPrice: parseFloat(value) };
+  //                 }
+  //                 return { ...item, discountPrice: parseFloat(item.marginPrice) };
+  //               }
+  //               return { ...item, discountPrice: 0 };
+  //             }
+  //           }
+  //           return item;
+  //         })
+  //       );
+  //       break;
+  //     case 'sellingPrice':
+  //       console.log('sellingPrice: ', value, ', Id: ', id);
+  //       setItems((prev) =>
+  //         prev.map((item) => {
+  //           if (item.productId === id) {
+  //             // if (parseFloat(value) >= 0) {
+  //             // if (item.unitSellingPrice < parseFloat(value)) {
+  //             if (value === '' || floatRegExp.test(value)) {
+  //               return { ...item, sellingPrice: parseFloat(value) };
+  //             }
+  //             // }
+  //             // return { ...item, sellingPrice: parseFloat(item.unitSellingPrice) };
+  //           }
+  //           // return { ...item, discountPrice: 0 };
+  //           // }
+  //           return item;
+  //         })
+  //       );
+  //       break;
+  //     case 'quantity':
+  //       break;
+  //     default:
+  //       break;
+  //   }
+
+  //   // if (value === '' || floatRegExp.test(value)) {
+  //   //   setValues({ ...values, sellingPrice: value });
+  //   // }
+  // };
+
+  const handledSellingPriceChange = (e, id) => {
+    const { name, value } = e.target;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.productId === id) {
+          if (value === '' || floatRegExp.test(value)) {
+            // if (item.unitSellingPrice < parseFloat(value)) {
+            return { ...item, [name]: parseFloat(value) };
+            // }
+            // return { ...item, sellingPrice: parseFloat(item.unitSellingPrice) };
+          }
+        }
+        return item;
+      })
+    );
+  };
+
+  const handledDiscountPriceChange = (e, id) => {
+    const { name, value } = e.target;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.productId === id) {
+          if (parseFloat(value) >= 0) {
+            if (item.marginPrice >= parseFloat(value)) {
+              return { ...item, [name]: parseFloat(value) };
+            }
+            return { ...item, [name]: parseFloat(item.marginPrice) };
+          }
+          return { ...item, [name]: 0 };
+        }
+        return item;
+      })
+    );
+  };
+
+  const handledQuantityChange = (e, id) => {
+    const { name, value } = e.target;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.productId === id) {
+          if (value > 0) {
+            if (item.stockAvailable >= value) {
+              return { ...item, quantity: parseInt(value, 10) };
+            }
+            return { ...item, quantity: parseInt(item.stockAvailable, 10) };
+          }
+          return { ...item, quantity: 1 };
+        }
+        return item;
+      })
+    );
+  };
+
+  const handleDeleteItem = (e, id) => {
+    setItems([...items].filter((item) => item.productId !== id));
+  };
+
   return (
-    <Modal isOpen={isOpen} size="lg">
+    <Modal isOpen={isOpen} style={{ maxWidth: '80%', maxHeight: '80%' }}>
       <ModalHeader>{getTitle(variant)}</ModalHeader>
       <ModalBody>
         <Form id="modalForm" onSubmit={handleSubmit} noValidate>
           <Row>
-            <Col
-              md={{
-                offset: 8,
-                size: 4,
-              }}
-            >
+            <Col>
               <FormGroup>
-                <Label for="typeField">Client Type</Label>
+                <Label for="clientIdField">Client</Label>
                 <Input
                   type="select"
-                  name="type"
-                  id="typeField"
+                  name="clientId"
+                  id="clientIdField"
                   autoComplete="off"
-                  value={values?.type}
-                  invalid={!!errors?.type}
+                  value={values?.clientId}
+                  invalid={!!errors?.clientId}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
                 >
-                  <option value="-1">Select Client Type</option>
-                  <option value="B">Business</option>
-                  <option value="I">Individual</option>
+                  <option value="-1">Select client</option>
+                  {clients.map((client) => (
+                    <option value={client?.id} key={client?.id}>
+                      {`${client?.name}${client?.vatno ? ` - ${client?.vatno}` : ''}`}
+                    </option>
+                  ))}
                 </Input>
-                <FormFeedback>{errors?.type}</FormFeedback>
+                <FormFeedback>{errors?.clientId}</FormFeedback>
               </FormGroup>
             </Col>
           </Row>
           <Row>
-            <Col md={8}>
+            <Col md={4}>
               <FormGroup>
-                <Label for="nameField">Name</Label>
+                <Label for="paymentTermIdField">Payment Term</Label>
                 <Input
-                  type="text"
-                  name="name"
-                  id="nameField"
-                  placeholder="Enter Name"
+                  type="select"
+                  name="paymentTermId"
+                  id="paymentTermIdField"
                   autoComplete="off"
-                  value={values?.name}
-                  invalid={!!errors?.name}
+                  value={values?.paymentTermId}
+                  invalid={!!errors?.paymentTermId}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
-                  maxLength="50"
-                />
-                <FormFeedback>{errors?.name}</FormFeedback>
+                >
+                  <option value="-1">Select payment term</option>
+                  {paymentTerms.map((paymentTerm) => (
+                    <option value={paymentTerm.id} key={paymentTerm.id}>
+                      {paymentTerm.name}
+                    </option>
+                  ))}
+                </Input>
+                <FormFeedback>{errors?.paymentTermId}</FormFeedback>
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
-            <Col md={8}>
+            <Col md={3}>
               <FormGroup>
-                <Label for="altnameField">Name (in arabic)</Label>
+                <Label for="refNoField">Ref No.</Label>
                 <Input
                   type="text"
-                  name="altname"
-                  id="altnameField"
-                  placeholder="Enter Name (in arabic)"
+                  name="refNo"
+                  id="refNoField"
+                  placeholder="Enter Ref No."
                   autoComplete="off"
-                  value={values?.altname}
-                  invalid={!!errors?.altname}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="50"
-                />
-                <FormFeedback>{errors?.altname}</FormFeedback>
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="vatnoField">VAT No.</Label>
-                <Input
-                  type="text"
-                  name="vatno"
-                  id="vatnoField"
-                  placeholder="Enter VAT No."
-                  autoComplete="off"
-                  value={values?.vatno}
-                  invalid={!!errors?.vatno}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly' || values?.type === 'I'}
-                  maxLength="15"
-                  onInput={(event) => {
-                    event.target.value = event.target.value.replace(/\D/g, '');
-                    event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
-                  }}
-                  onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <FormFeedback>{errors?.vatno}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="crnumField">CR No.</Label>
-                <Input
-                  type="text"
-                  name="crno"
-                  id="crnumField"
-                  placeholder="Enter CR No."
-                  autoComplete="off"
-                  value={values?.crno}
-                  invalid={!!errors?.crno}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly' || values?.type === 'I'}
-                  maxLength="10"
-                  onInput={(event) => {
-                    event.target.value = event.target.value.replace(/\D/g, '');
-                    event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
-                  }}
-                  onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <FormFeedback>{errors?.crno}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="phoneField">Phone No.</Label>
-                <InputGroup>
-                  <InputGroupText
-                    style={{
-                      borderTopRightRadius: '0px',
-                      borderTopLeftRadius: '8px',
-                      borderBottomRightRadius: '0px',
-                      borderBottomLeftRadius: '8px',
-                    }}
-                  >
-                    +966
-                  </InputGroupText>
-                  <Input
-                    type="text"
-                    name="phone"
-                    id="phoneField"
-                    placeholder="Enter Phone No."
-                    autoCapitalize="off"
-                    autoComplete="off"
-                    value={values.phone}
-                    invalid={!!errors?.phone}
-                    onChange={handleChange}
-                    disabled={variant === 'readonly'}
-                    maxLength="9"
-                    onInput={(event) => {
-                      event.target.value = event.target.value.replace(/\D/g, '');
-                      event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
-                    }}
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                </InputGroup>
-                <FormFeedback>{errors.phone}</FormFeedback>
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="landlineField">Landline No.</Label>
-                <InputGroup>
-                  <InputGroupText
-                    style={{
-                      borderTopRightRadius: '0px',
-                      borderTopLeftRadius: '8px',
-                      borderBottomRightRadius: '0px',
-                      borderBottomLeftRadius: '8px',
-                    }}
-                  >
-                    +966
-                  </InputGroupText>
-                  <Input
-                    type="text"
-                    name="landline"
-                    id="landlineField"
-                    placeholder="Enter Landline No."
-                    autoCapitalize="off"
-                    autoComplete="off"
-                    value={values.landline}
-                    invalid={!!errors?.landline}
-                    onChange={handleChange}
-                    disabled={variant === 'readonly'}
-                    maxLength="9"
-                    onInput={(event) => {
-                      event.target.value = event.target.value.replace(/\D/g, '');
-                      event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
-                    }}
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                </InputGroup>
-                <FormFeedback>{errors.landline}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={8}>
-              <FormGroup>
-                <Label for="websiteField">Website</Label>
-                <Input
-                  type="text"
-                  name="website"
-                  id="websiteField"
-                  placeholder="Enter Website"
-                  autoComplete="off"
-                  value={values?.website}
-                  invalid={!!errors?.website}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="100"
-                />
-                <FormFeedback>{errors?.website}</FormFeedback>
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={9}>
-              <FormGroup>
-                <Label for="emailField">Email</Label>
-                <Input
-                  type="text"
-                  name="email"
-                  id="emailField"
-                  placeholder="Enter Email"
-                  autoComplete="off"
-                  value={values?.email}
-                  invalid={!!errors?.email}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="100"
-                />
-                <FormFeedback>{errors?.email}</FormFeedback>
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="buildingnoField">Building No.</Label>
-                <Input
-                  type="text"
-                  name="buildingno"
-                  id="buildingnoField"
-                  placeholder="Enter Street No."
-                  autoComplete="off"
-                  value={values?.buildingno}
-                  invalid={!!errors?.buildingno}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="40"
-                />
-                <FormFeedback>{errors?.buildingno}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="streetnoField">Street No.</Label>
-                <Input
-                  type="text"
-                  name="streetno"
-                  id="streetnoField"
-                  placeholder="Enter Street No."
-                  autoComplete="off"
-                  value={values?.streetno}
-                  invalid={!!errors?.streetno}
+                  value={values?.refNo}
+                  invalid={!!errors?.refNo}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
                   maxLength="15"
                 />
-                <FormFeedback>{errors?.streetno}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="districtField">District</Label>
-                <Input
-                  type="text"
-                  name="district"
-                  id="districtField"
-                  placeholder="Enter District"
-                  autoComplete="off"
-                  value={values?.district}
-                  invalid={!!errors?.district}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="25"
-                />
-                <FormFeedback>{errors?.district}</FormFeedback>
+                <FormFeedback>{errors?.refNo}</FormFeedback>
               </FormGroup>
             </Col>
           </Row>
           <Row>
-            <Col md={3}>
+            <Col>
               <FormGroup>
-                <Label for="poboxField">P.O. Box</Label>
-                <Input
-                  type="text"
-                  name="pobox"
-                  id="poboxField"
-                  placeholder="Enter P.O. Box"
-                  autoComplete="off"
-                  value={values?.pobox}
-                  invalid={!!errors?.pobox}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="10"
+                <AutoComplete
+                  id="searchField"
+                  label=""
+                  placeholder="Search Product"
+                  minLength={2}
+                  labelKey="name"
+                  onClick={addItem}
+                  onInput={searchKeyword}
+                  options={searchList}
                 />
-                <FormFeedback>{errors?.pobox}</FormFeedback>
               </FormGroup>
             </Col>
-            <Col md={3}>
+          </Row>
+          <Row>
+            <Col>
               <FormGroup>
-                <Label for="cityField">City</Label>
-                <Input
-                  type="text"
-                  name="city"
-                  id="cityField"
-                  placeholder="Enter City"
-                  autoComplete="off"
-                  value={values?.city}
-                  invalid={!!errors?.city}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="20"
-                />
-                <FormFeedback>{errors?.city}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="citycodeField">City Code</Label>
-                <Input
-                  type="text"
-                  name="citycode"
-                  id="citycodeField"
-                  placeholder="Enter City Code"
-                  autoComplete="off"
-                  value={values?.citycode}
-                  invalid={!!errors?.citycode}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="10"
-                />
-                <FormFeedback>{errors?.citycode}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="countryField">Country</Label>
-                <Input
-                  type="text"
-                  name="country"
-                  id="countryField"
-                  placeholder="Enter Country"
-                  autoComplete="off"
-                  value={values?.country}
-                  invalid={!!errors?.country}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="30"
-                />
-                <FormFeedback>{errors?.country}</FormFeedback>
+                <div
+                  style={{
+                    borderTop: '1px solid #dee2e6',
+                    borderLeft: '1px solid #dee2e6',
+                    borderRight: '1px solid #dee2e6',
+                    borderTopRightRadius: '8px',
+                    borderTopLeftRadius: '8px',
+                  }}
+                >
+                  <Table
+                    className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)}
+                    responsive
+                    style={{ marginBottom: '0px' }}
+                  >
+                    <thead>
+                      <tr>
+                        <th style={{ width: '5%' }}>SR NO.</th>
+                        <th style={{ width: '5%' }}>CODE</th>
+                        <th className={styles.textAlignLeft} style={{ width: '30%' }}>
+                          Product Name
+                        </th>
+                        <th style={{ width: '6%' }}>Unit Price</th>
+                        <th style={{ width: '5%' }}>Quantity</th>
+                        <th style={{ width: '5%' }}>Stock Available</th>
+                        <th style={{ width: '8%' }}>Discount</th>
+                        <th style={{ width: '8%' }}>Net Amount</th>
+                        <th style={{ width: '4%' }}>VAT %</th>
+                        <th style={{ width: '8%' }}>Tax Amount</th>
+                        <th style={{ width: '8%' }}>Total Amount</th>
+                        <th style={{ width: '8%' }}>Remove</th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </div>
+                <div
+                  style={{
+                    borderLeft: '1px solid #dee2e6',
+                    borderRight: '1px solid #dee2e6',
+                    height: '70vh',
+                  }}
+                  className={styles.scrollable}
+                >
+                  {items.length ? (
+                    <Table className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)} responsive>
+                      <tbody>
+                        {items.map((item, index) => (
+                          <tr key={item?.productId}>
+                            <td style={{ width: '5%' }} className={styles.textAlignCenter}>
+                              {index + 1}
+                            </td>
+                            <td style={{ width: '5%' }} className={styles.textAlignCenter}>
+                              {item?.productId?.replace('PRODT', '')}
+                            </td>
+                            <td className={styles.textAlignLeft} style={{ width: '30%' }}>
+                              {item?.name}
+                            </td>
+                            <td style={{ width: '6%' }}>
+                              <Input
+                                type="text"
+                                name="sellingPrice"
+                                id="sellingPriceField"
+                                autoComplete="off"
+                                value={item?.sellingPrice}
+                                className={styles.textAlignRight}
+                                // onBlur={(e) => handledItemChange(e, item?.productId)}
+                                onChange={(e) => handledSellingPriceChange(e, item?.productId)}
+                              />
+                            </td>
+                            <td style={{ width: '5%' }}>
+                              <Input
+                                type="text"
+                                name="quantity"
+                                id="quantityField"
+                                autoComplete="off"
+                                maxLength="2"
+                                className={styles.textAlignRight}
+                                value={item?.quantity}
+                                onInput={(event) => {
+                                  event.target.value = event.target.value.replace(/\D/g, '');
+                                  event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
+                                }}
+                                onKeyPress={(event) => {
+                                  if (!/[0-9]/.test(event.key)) {
+                                    event.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => handledQuantityChange(e, item?.productId)}
+                              />
+                            </td>
+                            <td style={{ width: '5%' }}>{item?.stockAvailable}</td>
+                            <td style={{ width: '8%' }}>
+                              <Input
+                                type="text"
+                                name="discountPrice"
+                                id="discountPriceField"
+                                autoComplete="off"
+                                value={item?.discountPrice}
+                                className={styles.textAlignRight}
+                                onChange={(e) => handledDiscountPriceChange(e, item?.productId)}
+                              />
+                            </td>
+                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
+                              {((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2)}
+                            </td>
+                            <td className={styles.textAlignRight} style={{ width: '4%' }}>
+                              {getVATPercentageById(item?.vatPercentageId)} %
+                            </td>
+                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
+                              {(
+                                (item.sellingPrice - item.discountPrice) *
+                                item.quantity *
+                                (getVATPercentageById(item?.vatPercentageId) / 100)
+                              ).toFixed(2)}
+                            </td>
+                            <td style={{ width: '8%' }}>
+                              {(
+                                (item.sellingPrice - item.discountPrice) * item.quantity +
+                                (item.sellingPrice - item.discountPrice) *
+                                  item.quantity *
+                                  (getVATPercentageById(item?.vatPercentageId) / 100)
+                              ).toFixed(2)}
+                            </td>
+                            <td style={{ width: '8%' }}>
+                              <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
+                                <i
+                                  style={{ cursor: 'pointer' }}
+                                  className="eva eva-trash-2-outline"
+                                  onClick={(e) => {
+                                    handleDeleteItem(e, item?.productId);
+                                  }}
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <Table className={classNames('table-striped table-borderless')} responsive>
+                      <tbody>
+                        <tr>
+                          <td style={{ paddingLeft: '22px' }}>Add Item's</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  )}
+                </div>
+                <div
+                  style={{
+                    borderBottom: '1px solid #dee2e6',
+                    borderLeft: '1px solid #dee2e6',
+                    borderRight: '1px solid #dee2e6',
+                    borderBottomRightRadius: '8px',
+                    borderBottomLeftRadius: '8px',
+                  }}
+                >
+                  {/* <Table
+                    className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)}
+                    responsive
+                    style={{ marginBottom: '0px' }}
+                  >
+                    <thead>
+                      <tr>
+                        <th className={styles.textAlignLeft} style={{ width: '64%' }}>
+                          TOTAL
+                        </th>
+                        <th style={{ width: '8%' }}>Net Amount</th>
+                        <th style={{ width: '4%' }}>+</th>
+                        <th style={{ width: '8%' }}>Tax Amount</th>
+                        <th style={{ width: '8%' }}>Total Amount</th>
+                        <th style={{ width: '8%' }}> </th>
+                      </tr>
+                    </thead>
+                  </Table> */}
+                </div>
+                {errors?.items ? (
+                  <div className="invalid-feedback" style={{ display: 'block' }}>
+                    {errors?.items}
+                  </div>
+                ) : null}
+                <FormFeedback>{errors?.items}</FormFeedback>
               </FormGroup>
             </Col>
           </Row>

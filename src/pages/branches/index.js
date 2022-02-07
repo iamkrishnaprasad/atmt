@@ -87,7 +87,7 @@ function BranchesPage() {
                 </thead>
                 <tbody>
                   {branches.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((item, index) => (
-                    <tr key={`${item?.id}`}>
+                    <tr key={item?.id}>
                       <td>{currentPage * pageSize + (index + 1)}</td>
                       <td className={styles.textAlignLeft}>{item?.name}</td>
                       <td>{item?.phone ? `+966 ${item?.phone}` : '-'}</td>

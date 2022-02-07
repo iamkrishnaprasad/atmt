@@ -3,16 +3,16 @@ export default function validateInfo(values, variant = '') {
   const errors = {};
 
   if (!values?.name?.trim()) {
-    errors.name = 'Client name is required';
+    errors.name = 'Client name is required.';
   } else if (values?.name?.trim().length < 5) {
     errors.name = 'Client name should have atleast 5 characters.';
   }
 
   if (values?.type?.trim() === '' || values?.type?.trim() === '-1') {
-    errors.type = 'Client type is required';
+    errors.type = 'Client type is required.';
   } else if (values?.type?.trim() === 'B') {
     if (!values?.vatno?.trim()) {
-      errors.vatno = 'VAT no. is required';
+      errors.vatno = 'VAT no. is required.';
     } else if (values?.vatno?.trim().length !== 0 && values?.vatno?.trim().length < 15) {
       errors.vatno = 'Enter a valid VAT no.';
     }
