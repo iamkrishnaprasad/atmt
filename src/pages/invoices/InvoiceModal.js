@@ -352,7 +352,6 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 name="quantity"
                                 id="quantityField"
                                 autoComplete="off"
-                                maxLength="2"
                                 className={styles.textAlignRight}
                                 value={item?.quantity}
                                 onInput={(event) => {
