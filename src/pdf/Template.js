@@ -46,15 +46,15 @@ const styles = StyleSheet.create({
 const getTitle = (orderType) => {
   switch (orderType) {
     case 'Tax Invoice':
-      return `${locale?.en?.invoice?.toUpperCase()} ${locale?.ar?.invoice?.length ? '/ ' : ''}${locale?.ar?.invoice ?? ''}`;
+      return `${locale?.en?.invoice?.toUpperCase()} ${locale?.ar?.invoice?.length ? `/ ${locale?.ar?.invoice}` : ''}`;
     case 'simplifiedinvoice':
-      return `${locale?.en?.simplifiedinvoice?.toUpperCase()} ${locale?.ar?.simplifiedinvoice?.length ? '/ ' : ''}${
-        locale?.ar?.simplifiedinvoice ?? ''
+      return `${locale?.en?.simplifiedinvoice?.toUpperCase()} ${
+        locale?.ar?.simplifiedinvoice?.length ? `/ ${locale?.ar?.simplifiedinvoice}` : ''
       }`;
     case 'deliverynote':
-      return `${locale?.en?.deliverynote?.toUpperCase()} ${locale?.ar?.deliverynote?.length ? '/ ' : ''}${locale?.ar?.deliverynote ?? ''}`;
+      return `${locale?.en?.deliverynote?.toUpperCase()} ${locale?.ar?.deliverynote?.length ? `/ ${locale?.ar?.deliverynote}` : ''}`;
     case 'quotation':
-      return `${locale?.en?.quotation?.toUpperCase()} ${locale?.ar?.quotation?.length ? '/ ' : ''}${locale?.ar?.quotation ?? ''}`;
+      return `${locale?.en?.quotation?.toUpperCase()} ${locale?.ar?.quotation?.length ? `/ ${locale?.ar?.quotation}` : ''}`;
     default:
       return orderType;
   }
@@ -89,42 +89,42 @@ function CompanyDetails({ data }) {
         </View>
         {data?.vatno?.length ? (
           <Text style={styles.companyDetailsText}>
-            {`${locale?.en?.vatno} ${locale?.ar?.vatno?.length ? '/ ' : ''}${locale?.ar?.vatno}`}
+            {`${locale?.en?.vatno} ${locale?.ar?.vatno?.length ? `/ ${locale?.ar?.vatno}` : ''}`}
             {` : `}
             {data?.vatno}
           </Text>
         ) : null}
         {data?.crno ? (
           <Text style={styles.companyDetailsText}>
-            {`${locale?.en?.crno} ${locale?.ar?.crno?.length ? '/ ' : ''}${locale?.ar?.crno}`}
+            {`${locale?.en?.crno} ${locale?.ar?.crno?.length ? `/ ${locale?.ar?.crno}` : ''}`}
             {` : `}
             {data?.crno}
           </Text>
         ) : null}
         {data?.phone?.length ? (
           <Text style={styles.companyDetailsText}>
-            {`${locale?.en?.phone} ${locale?.ar?.phone?.length ? '/ ' : ''}${locale?.ar?.phone}`}
+            {`${locale?.en?.phone} ${locale?.ar?.phone?.length ? `/ ${locale?.ar?.phone}` : ''}`}
             {` : +966 `}
             {data?.phone}
           </Text>
         ) : null}
         {data?.landline?.length ? (
           <Text style={styles.companyDetailsText}>
-            {`${locale?.en?.landline} ${locale?.ar?.landline?.length ? '/ ' : ''}${locale?.ar?.landline}`}
+            {`${locale?.en?.landline} ${locale?.ar?.landline?.length ? `/ ${locale?.ar?.landline}` : ''}`}
             {` : +966 `}
             {data?.landline}
           </Text>
         ) : null}
         {data?.email?.length ? (
           <Text style={styles.companyDetailsText}>
-            {`${locale?.en?.email} ${locale?.ar?.email?.length ? '/ ' : ''}${locale?.ar?.email}`}
+            {`${locale?.en?.email} ${locale?.ar?.email?.length ? `/ ${locale?.ar?.email}` : ''}`}
             {` : `}
             {data?.email}
           </Text>
         ) : null}
         {data?.website?.length ? (
           <Text style={styles.companyDetailsText}>
-            {`${locale?.en?.website} ${locale?.ar?.website?.length ? '/ ' : ''}${locale?.ar?.website}`}
+            {`${locale?.en?.website} ${locale?.ar?.website?.length ? `/ ${locale?.ar?.website}` : ''}`}
             {` : `}
             {data?.website}
           </Text>
@@ -151,48 +151,48 @@ function OrderDetails({ data = '' }) {
   return (
     <>
       <Text style={styles.detailsHeadText}>
-        {`${locale?.en?.orderdetails} ${locale?.ar?.orderdetails?.length ? '/ ' : ''}${locale?.ar?.orderdetails}`}
+        {`${locale?.en?.orderdetails} ${locale?.ar?.orderdetails?.length ? `/ ${locale?.ar?.orderdetails}` : ''}`}
         {` :`}
       </Text>
       <View style={styles.detailsView}>
         {data?.id?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.orderno} ${locale?.ar?.orderno?.length ? '/ ' : ''}${locale?.ar?.orderno}`}
+            {`${locale?.en?.orderno} ${locale?.ar?.orderno?.length ? `/ ${locale?.ar?.orderno}` : ''}`}
             {`${locale?.ar?.orderno?.length ? ' : ' : ': '}`}
             {`${data?.id?.trim()?.replace('ORD', '').toUpperCase()}`}
           </Text>
         ) : null}
         {data?.orderNo?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.invoiceno} ${locale?.ar?.invoiceno?.length ? '/ ' : ''}${locale?.ar?.invoiceno}`}
+            {`${locale?.en?.invoiceno} ${locale?.ar?.invoiceno?.length ? `/ ${locale?.ar?.invoiceno}` : ''}`}
             {`${locale?.ar?.invoiceno?.length ? ' : ' : ': '}`}
             {`${data?.orderNo?.trim()?.toUpperCase()}`}
           </Text>
         ) : null}
         {data?.paymentTerm?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.paymentterm} ${locale?.ar?.paymentterm?.length ? '/ ' : ''}${locale?.ar?.paymentterm}`}
+            {`${locale?.en?.paymentterm} ${locale?.ar?.paymentterm?.length ? `/ ${locale?.ar?.paymentterm}` : ''}`}
             {`${locale?.ar?.paymentterm?.length ? ' : ' : ': '}`}
             {`${data?.paymentTerm?.trim()?.toUpperCase()}`}
           </Text>
         ) : null}
         {data?.issuedDate?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.issueddate} ${locale?.ar?.issueddate?.length ? '/ ' : ''}${locale?.ar?.issueddate}`}
+            {`${locale?.en?.issueddate} ${locale?.ar?.issueddate?.length ? `/ ${locale?.ar?.issueddate}` : ''}`}
             {`${locale?.ar?.issueddate?.length ? ' : ' : ': '}`}
             {`${Moment(data?.issuedDate?.trim()?.toUpperCase()).format('YYYY-MM-DD')}`}
           </Text>
         ) : null}
         {data?.validTill?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.validtill} ${locale?.ar?.validtill?.length ? '/ ' : ''}${locale?.ar?.validtill}`}
+            {`${locale?.en?.validtill} ${locale?.ar?.validtill?.length ? `/ ${locale?.ar?.validtill}` : ''}`}
             {`${locale?.ar?.validtill?.length ? ' : ' : ': '}`}
             {`${Moment(data?.validTill?.trim()?.toUpperCase()).format('YYYY-MM-DD')}`}
           </Text>
         ) : null}
         {data?.refNo?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.refno} ${locale?.ar?.refno?.length ? '/ ' : ''}${locale?.ar?.refno}`}
+            {`${locale?.en?.refno} ${locale?.ar?.refno?.length ? `/ ${locale?.ar?.refno}` : ''}`}
             {`${locale?.ar?.refno?.length ? ' : ' : ': '}`}
             {`${data?.refNo?.trim()?.toUpperCase()}`}
           </Text>
@@ -206,13 +206,13 @@ function ClientDetails({ data = '' }) {
   return (
     <>
       <Text style={styles.detailsHeadText}>
-        {`${locale?.en?.billto} ${locale?.ar?.billto?.length ? '/ ' : ''}${locale?.ar?.billto}`} {` :  `}
+        {`${locale?.en?.billto} ${locale?.ar?.billto?.length ? `/ ${locale?.ar?.billto}` : ''}`} {` :  `}
       </Text>
 
       <View style={styles.detailsView}>
         {data?.name?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${data?.name?.trim()?.toUpperCase()} ${locale?.ar?.vatno?.length ? '/' : ''} ${data?.altname?.trim()?.toUpperCase()}`}
+            {`${data?.name?.trim()?.toUpperCase()} ${data?.altname?.trim()?.length ? `/ ${data?.altname?.trim()?.toUpperCase()}` : ''}`}
           </Text>
         ) : null}
         {data?.buildingno?.trim()?.length || data?.streetno?.trim()?.length || data?.district?.trim()?.length ? (
@@ -234,32 +234,32 @@ function ClientDetails({ data = '' }) {
 
         {data?.vatno?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.vatno} ${locale?.ar?.vatno?.length ? '/ ' : ''}${locale?.ar?.vatno}`} {` :  `}
+            {`${locale?.en?.vatno} ${locale?.ar?.vatno?.length ? `/ ${locale?.ar?.vatno}` : ''}`} {` :  `}
             {`${data?.vatno?.trim()?.toUpperCase()}`}
           </Text>
         ) : null}
         {data?.crno?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.crno} ${locale?.ar?.crno?.length ? '/ ' : ''}${locale?.ar?.crno}`} {` :  `}
+            {`${locale?.en?.crno} ${locale?.ar?.crno?.length ? `/ ${locale?.ar?.crno}` : ''}`} {` :  `}
             {`${data?.crno?.trim()?.toUpperCase()}`}
           </Text>
         ) : null}
         {data?.contact?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.contactno} ${locale?.ar?.contactno?.length ? '/ ' : ''}${locale?.ar?.contactno}`}
+            {`${locale?.en?.contactno} ${locale?.ar?.contactno?.length ? `/ ${locale?.ar?.contactno}` : ''}`}
             {` :  +966 `}
             {`${data?.contact?.trim()?.toUpperCase()}`}
           </Text>
         ) : null}
         {data?.email?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.email} ${locale?.ar?.email?.length ? '/ ' : ''}${locale?.ar?.email}`} {` :  `}
+            {`${locale?.en?.email} ${locale?.ar?.email?.length ? `/ ${locale?.ar?.email}` : ''}`} {` :  `}
             {`${data?.email?.trim()?.toLowerCase()}`}
           </Text>
         ) : null}
         {data?.website?.trim()?.length ? (
           <Text style={styles.detailsText}>
-            {`${locale?.en?.website} ${locale?.ar?.website?.length ? '/ ' : ''}${locale?.ar?.website}`} {` :  `}
+            {`${locale?.en?.website} ${locale?.ar?.website?.length ? `/ ${locale?.ar?.website}` : ''}`} {` :  `}
             {`${data?.website?.trim()?.toLowerCase()}`}
           </Text>
         ) : null}
@@ -428,7 +428,7 @@ function TableFooter({ netAmount, totalTax }) {
     <View style={[styles.tableView, { fontWeight: 'bold' }]}>
       <View style={[styles.tableFooterBox, { width: '361px' }]}>
         <Text style={[styles.tableText, { textAlign: 'left' }]}>
-          {`${locale?.en?.totalinsar} ${locale?.ar?.totalinsar?.length ? '/ ' : ''}${locale?.ar?.totalinsar}`}
+          {`${locale?.en?.totalinsar} ${locale?.ar?.totalinsar?.length ? `/ ${locale?.ar?.totalinsar}` : ''}`}
         </Text>
       </View>
       <View style={[styles.tableFooterBox, { width: '42px' }]}>
@@ -479,12 +479,12 @@ function Footer({ orderId, orderNo }) {
 function Template({ order = '' }) {
   return (
     <Document
-      title={order?.type}
+      title={`${order?.type} ${order?.orderNo?.length ? ` - ${order?.orderNo}` : ``}`}
       author="https://github.com/krishnaprasad1991"
       subject="Invoice"
       keywords=""
-      creator="ATMT"
-      producer="ATMT"
+      creator="www.atmtksa.com"
+      producer="www.atmtksa.com"
     >
       <Page size="A4" style={styles.page} wrap>
         <Header data={order?.company} />

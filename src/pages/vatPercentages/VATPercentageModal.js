@@ -51,7 +51,7 @@ function VATPercentageModal({ variant, isOpen, toggle, onSubmit, data }) {
     }
   }, [errors]);
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} style={{ zoom: '65%' }}>
       <ModalHeader>{getTitle(variant)}</ModalHeader>
       <ModalBody>
         <Form id="modalForm" onSubmit={handleSubmit} noValidate>

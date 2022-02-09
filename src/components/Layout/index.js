@@ -62,15 +62,15 @@ function Layout() {
     dispatch(fetchUserRoles());
     dispatch(fetchUnitTypes());
 
-    const initialValue = document.body.style.zoom;
+    // const initialValue = document.body.style.zoom;
 
-    // Change zoom level on mount
-    document.body.style.zoom = '65%';
+    // // Change zoom level on mount
+    // document.body.style.zoom = '65%';
 
-    return () => {
-      // Restore default value
-      document.body.style.zoom = initialValue;
-    };
+    // return () => {
+    //   // Restore default value
+    //   document.body.style.zoom = initialValue;
+    // };
   }, []);
   return (
     <div className={styles.root}>

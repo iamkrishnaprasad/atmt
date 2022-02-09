@@ -1,16 +1,21 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable react/no-unstable-nested-components */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Input, Label } from 'reactstrap';
+import { Input, Spinner } from 'reactstrap';
+import classNames from 'classnames';
 import { clearSearchProduct } from '../../redux';
+import styles from '../../components/Tables/Tables.module.scss';
 
-function AutoComplete({ id = '', minLength = 0, options, labelKey = 'name', onClick, onInput, label = '', placeholder = '' }) {
+function AutoComplete({ minLength = 0, options, labelKey = 'name', onClick, onInput, placeholder = '', loading }) {
   const dispatch = useDispatch();
   const [filteredOptions, setFilteredOptions] = useState([]);
-  const [activeOptionIndex, setActiveOptionIndex] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
   const [input, setInput] = useState('');
+
+  useEffect(() => {
+    setFilteredOptions(options);
+  }, [options, loading]);
 
   const onChange = (e) => {
     const { value } = e.target;
@@ -22,69 +27,60 @@ function AutoComplete({ id = '', minLength = 0, options, labelKey = 'name', onCl
       const unLinked = options.filter((option) => option[labelKey]?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1);
 
       setFilteredOptions(unLinked);
-      setActiveOptionIndex(0);
       setShowOptions(true);
     } else {
       setFilteredOptions([]);
-      setActiveOptionIndex(0);
       setShowOptions(false);
     }
   };
 
   const handleClick = (e, data) => {
     onClick(data);
-    dispatch(clearSearchProduct());
     setFilteredOptions([]);
     setInput('');
-    setActiveOptionIndex(0);
     setShowOptions(false);
-  };
-
-  const onKeyDown = (e) => {
-    // User pressed the enter key
-    if (e.keyCode === 13) {
-      setInput(filteredOptions[activeOptionIndex]);
-      setActiveOptionIndex(0);
-      setShowOptions(false);
-    }
-    // User pressed the up arrow
-    else if (e.keyCode === 38) {
-      if (activeOptionIndex === 0) {
-        return;
-      }
-      setActiveOptionIndex(activeOptionIndex - 1);
-    }
-    // User pressed the down arrow
-    else if (e.keyCode === 40) {
-      if (activeOptionIndex - 1 === filteredOptions.length) {
-        return;
-      }
-      setActiveOptionIndex(activeOptionIndex + 1);
-    }
+    dispatch(clearSearchProduct());
   };
 
   function OptionsListComponent() {
     return filteredOptions.length ? (
-      <ul className="suggestions">
+      <ul className={classNames(styles.optionsList, styles.scrollable)}>
         {filteredOptions.map((option, index) => (
-          <li className={index === activeOptionIndex ? 'suggestion-active' : null} key={index} onClick={(e) => handleClick(e, option)}>
-            {option[labelKey]}
+          <li key={index} onClick={(e) => handleClick(e, option)}>
+            {option.productId.replace('PRODT', '')} - {option.name}
           </li>
         ))}
       </ul>
     ) : (
-      <div className="no-suggestions">
+      <div>
         <em>No product found.</em>
       </div>
     );
   }
 
   return (
-    <>
-      {label.length ? <Label for={id}>{label}</Label> : null}
-      <Input type="text" id={id} onChange={onChange} onKeyDown={onKeyDown} value={input} placeholder={placeholder} autoComplete="off" />
+    <div style={{ position: 'relative' }}>
+      <Input
+        type="text"
+        id="searchInputField"
+        onPaste={(e) => {
+          e.preventDefault();
+          return false;
+        }}
+        onCopy={(e) => {
+          e.preventDefault();
+          return false;
+        }}
+        onChange={onChange}
+        value={input}
+        placeholder={placeholder}
+        autoComplete="off"
+      />
+      {loading ? (
+        <Spinner style={{ width: '1.5rem', height: '1.5rem', position: 'absolute', right: '6px', top: '6px', cursor: 'text' }} />
+      ) : null}
       {showOptions && input && <OptionsListComponent />}
-    </>
+    </div>
   );
 }
 

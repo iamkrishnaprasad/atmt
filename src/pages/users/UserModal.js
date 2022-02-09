@@ -72,7 +72,7 @@ function UserModal({ variant, isOpen, toggle, onSubmit, data }) {
   }, [errors]);
 
   return (
-    <Modal isOpen={isOpen} size="lg">
+    <Modal isOpen={isOpen} style={{ zoom: '65%' }} size="lg">
       <ModalHeader>{getTitle(variant)}</ModalHeader>
       <ModalBody>
         <Form id="modalForm" onSubmit={handleSubmit} noValidate>
