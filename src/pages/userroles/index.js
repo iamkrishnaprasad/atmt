@@ -52,7 +52,7 @@ function UserRolesPage() {
 
   return (
     <>
-      <Row className="mb-4">
+      <Row className="mb-4" style={{ zoom: '65%' }}>
         <Col>
           <Widget>
             <div className={styles.tableTitle}>

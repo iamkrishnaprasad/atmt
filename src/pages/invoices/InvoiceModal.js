@@ -48,8 +48,9 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   const addItem = (item) => {
     const isItemExist = !!items.filter((i) => i.productId === item.productId)?.length;
     if (!isItemExist) {
-      const updatedItem = { ...item, quantity: 1, sellingPrice: item.unitSellingPrice };
-      setItems([...items, updatedItem]);
+      if (item?.stockAvailable) {
+        setItems([...items, { ...item, quantity: 1, sellingPrice: item.unitSellingPrice }]);
+      }
     }
   };
 
@@ -59,6 +60,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
 
   useEffect(() => {
     setValues(data);
+    setItems([]);
   }, [variant, isOpen]);
 
   const handleChange = (e) => {
@@ -107,6 +109,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   const paymentTerms = useSelector((state) => state.paymentTerms.data);
   const clients = useSelector((state) => state.clients.data);
   const searchList = useSelector((state) => state.search.data);
+  const isSearching = useSelector((state) => state.search.loading);
   const vatPercentages = useSelector((state) => state.vatPercentages.data);
 
   const getVATPercentageById = (id) => {
@@ -118,68 +121,30 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
 
   const floatRegExp = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/;
 
-  // const handledItemChange = (e, id) => {
-  //   const { name, value } = e.target;
-
-  //   switch (name) {
-  //     case 'discountPrice':
-  //       setItems((prev) =>
-  //         prev.map((item) => {
-  //           if (item.productId === id) {
-  //             if (value === '' || floatRegExp.test(value)) {
-  //               if (parseFloat(value) >= 0) {
-  //                 if (item.marginPrice >= parseFloat(value)) {
-  //                   return { ...item, discountPrice: parseFloat(value) };
-  //                 }
-  //                 return { ...item, discountPrice: parseFloat(item.marginPrice) };
-  //               }
-  //               return { ...item, discountPrice: 0 };
-  //             }
-  //           }
-  //           return item;
-  //         })
-  //       );
-  //       break;
-  //     case 'sellingPrice':
-  //       console.log('sellingPrice: ', value, ', Id: ', id);
-  //       setItems((prev) =>
-  //         prev.map((item) => {
-  //           if (item.productId === id) {
-  //             // if (parseFloat(value) >= 0) {
-  //             // if (item.unitSellingPrice < parseFloat(value)) {
-  //             if (value === '' || floatRegExp.test(value)) {
-  //               return { ...item, sellingPrice: parseFloat(value) };
-  //             }
-  //             // }
-  //             // return { ...item, sellingPrice: parseFloat(item.unitSellingPrice) };
-  //           }
-  //           // return { ...item, discountPrice: 0 };
-  //           // }
-  //           return item;
-  //         })
-  //       );
-  //       break;
-  //     case 'quantity':
-  //       break;
-  //     default:
-  //       break;
-  //   }
-
-  //   // if (value === '' || floatRegExp.test(value)) {
-  //   //   setValues({ ...values, sellingPrice: value });
-  //   // }
-  // };
-
   const handledSellingPriceChange = (e, id) => {
     const { name, value } = e.target;
     setItems((prev) =>
       prev.map((item) => {
         if (item.productId === id) {
-          if (value === '' || floatRegExp.test(value)) {
-            // if (item.unitSellingPrice < parseFloat(value)) {
+          if (value === '') {
+            return { ...item, [name]: 0 };
+          }
+          if (floatRegExp.test(value)) {
             return { ...item, [name]: parseFloat(value) };
-            // }
-            // return { ...item, sellingPrice: parseFloat(item.unitSellingPrice) };
+          }
+        }
+        return item;
+      })
+    );
+  };
+
+  const checkSellingPrice = (e, id) => {
+    const { name, value } = e.target;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.productId === id) {
+          if (item.unitSellingPrice > parseFloat(value) || Number.isNaN(value)) {
+            return { ...item, [name]: parseFloat(item.unitSellingPrice) };
           }
         }
         return item;
@@ -193,7 +158,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
       prev.map((item) => {
         if (item.productId === id) {
           if (parseFloat(value) >= 0) {
-            if (item.marginPrice >= parseFloat(value)) {
+            if (item.marginPrice > parseFloat(value)) {
               return { ...item, [name]: parseFloat(value) };
             }
             return { ...item, [name]: parseFloat(item.marginPrice) };
@@ -228,7 +193,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   };
 
   return (
-    <Modal isOpen={isOpen} style={{ maxWidth: '80%', maxHeight: '80%' }}>
+    <Modal isOpen={isOpen} style={{ maxWidth: '80%', maxHeight: '80%', zoom: '65%' }}>
       <ModalHeader>{getTitle(variant)}</ModalHeader>
       <ModalBody>
         <Form id="modalForm" onSubmit={handleSubmit} noValidate>
@@ -305,13 +270,13 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
               <FormGroup>
                 <AutoComplete
                   id="searchField"
-                  label=""
                   placeholder="Search Product"
                   minLength={2}
                   labelKey="name"
                   onClick={addItem}
                   onInput={searchKeyword}
                   options={searchList}
+                  loading={isSearching}
                 />
               </FormGroup>
             </Col>
@@ -321,15 +286,20 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
               <FormGroup>
                 <div
                   style={{
-                    borderTop: '1px solid #dee2e6',
-                    borderLeft: '1px solid #dee2e6',
-                    borderRight: '1px solid #dee2e6',
-                    borderTopRightRadius: '8px',
-                    borderTopLeftRadius: '8px',
+                    // borderTop: '1px solid #dee2e6',
+                    // borderLeft: '1px solid #dee2e6',
+                    // borderRight: '1px solid #dee2e6',
+                    // borderTopRightRadius: '8px',
+                    // borderTopLeftRadius: '8px',
+
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    height: '80vh',
                   }}
+                  className={styles.scrollable}
                 >
                   <Table
-                    className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)}
+                    className={classNames(`table-striped table-borderless ${items.length ? 'table-hover' : ''}`, styles.textAlignCenter)}
                     responsive
                     style={{ marginBottom: '0px' }}
                   >
@@ -351,20 +321,9 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                         <th style={{ width: '8%' }}>Remove</th>
                       </tr>
                     </thead>
-                  </Table>
-                </div>
-                <div
-                  style={{
-                    borderLeft: '1px solid #dee2e6',
-                    borderRight: '1px solid #dee2e6',
-                    height: '70vh',
-                  }}
-                  className={styles.scrollable}
-                >
-                  {items.length ? (
-                    <Table className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)} responsive>
-                      <tbody>
-                        {items.map((item, index) => (
+                    <tbody>
+                      {items.length ? (
+                        items.map((item, index) => (
                           <tr key={item?.productId}>
                             <td style={{ width: '5%' }} className={styles.textAlignCenter}>
                               {index + 1}
@@ -383,7 +342,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 autoComplete="off"
                                 value={item?.sellingPrice}
                                 className={styles.textAlignRight}
-                                // onBlur={(e) => handledItemChange(e, item?.productId)}
+                                onBlur={(e) => checkSellingPrice(e, item?.productId)}
                                 onChange={(e) => handledSellingPriceChange(e, item?.productId)}
                               />
                             </td>
@@ -420,13 +379,9 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 onChange={(e) => handledDiscountPriceChange(e, item?.productId)}
                               />
                             </td>
-                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
-                              {((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2)}
-                            </td>
-                            <td className={styles.textAlignRight} style={{ width: '4%' }}>
-                              {getVATPercentageById(item?.vatPercentageId)} %
-                            </td>
-                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
+                            <td style={{ width: '8%' }}>{((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2)}</td>
+                            <td style={{ width: '4%' }}>{getVATPercentageById(item?.vatPercentageId)} %</td>
+                            <td style={{ width: '8%' }}>
                               {(
                                 (item.sellingPrice - item.discountPrice) *
                                 item.quantity *
@@ -453,46 +408,16 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                               </div>
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  ) : (
-                    <Table className={classNames('table-striped table-borderless')} responsive>
-                      <tbody>
+                        ))
+                      ) : (
                         <tr>
-                          <td style={{ paddingLeft: '22px' }}>Add Item's</td>
+                          <td style={{ paddingLeft: '18px', textAlign: 'left' }} colSpan="12">
+                            Add Item's
+                          </td>
                         </tr>
-                      </tbody>
-                    </Table>
-                  )}
-                </div>
-                <div
-                  style={{
-                    borderBottom: '1px solid #dee2e6',
-                    borderLeft: '1px solid #dee2e6',
-                    borderRight: '1px solid #dee2e6',
-                    borderBottomRightRadius: '8px',
-                    borderBottomLeftRadius: '8px',
-                  }}
-                >
-                  {/* <Table
-                    className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)}
-                    responsive
-                    style={{ marginBottom: '0px' }}
-                  >
-                    <thead>
-                      <tr>
-                        <th className={styles.textAlignLeft} style={{ width: '64%' }}>
-                          TOTAL
-                        </th>
-                        <th style={{ width: '8%' }}>Net Amount</th>
-                        <th style={{ width: '4%' }}>+</th>
-                        <th style={{ width: '8%' }}>Tax Amount</th>
-                        <th style={{ width: '8%' }}>Total Amount</th>
-                        <th style={{ width: '8%' }}> </th>
-                      </tr>
-                    </thead>
-                  </Table> */}
+                      )}
+                    </tbody>
+                  </Table>
                 </div>
                 {errors?.items ? (
                   <div className="invalid-feedback" style={{ display: 'block' }}>
