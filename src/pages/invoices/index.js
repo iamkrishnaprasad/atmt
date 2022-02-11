@@ -8,14 +8,12 @@ import { addInvoice, fetchInvoices, updateInvoice } from '../../redux';
 import Widget from '../../components/Widget/Widget';
 import styles from '../../components/Tables/Tables.module.scss';
 
-import { getProfileData } from '../../services/profile';
 import { INVOICE_INITIAL_VALUE } from '../../constant';
 import InvoiceModal from './InvoiceModal';
 
 import { TableBody, TableHead } from './Table';
 
 function InvoicesPage() {
-  const profile = getProfileData();
   const data = useSelector((state) => state.invoices.data);
 
   const dispatch = useDispatch();
