@@ -23,6 +23,7 @@ import styles from '../../components/Tables/Tables.module.scss';
 import AutoComplete from './AutoComplete';
 import validate from './validateInfo';
 import { getUserBranchId } from '../../services/profile';
+import toFormattedNumber from '../../utils/general';
 
 function getTitle(variant) {
   switch (variant) {
@@ -40,8 +41,46 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userBranchId = getUserBranchId();
+  const paymentTerms = useSelector((state) => state.paymentTerms.data);
+  const clients = useSelector((state) => state.clients.data);
+  const searchList = useSelector((state) => state.search.data);
+  const isSearching = useSelector((state) => state.search.loading);
+  const vatPercentages = useSelector((state) => state.vatPercentages.data);
+
+  const getVATPercentageById = (id) => {
+    if (vatPercentages.length > 0) {
+      return vatPercentages?.find((vatPercentage) => vatPercentage.id === id)?.vatPercentage ?? null;
+    }
+    return null;
+  };
 
   const [items, setItems] = useState([]);
+  const [total, setTotal] = useState({});
+
+  useEffect(() => {
+    /* eslint-disable no-underscore-dangle */
+    let _totalNetAmount = 0;
+    let _totalTaxAmount = 0;
+    let _totalAmount = 0;
+
+    if (items.length) {
+      items.forEach((item) => {
+        const netAmount = ((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2);
+        const taxAmount = netAmount * (getVATPercentageById(item?.vatPercentageId) / 100).toFixed(2);
+
+        _totalNetAmount += parseFloat(netAmount);
+        _totalTaxAmount += parseFloat(taxAmount);
+        _totalAmount += parseFloat(netAmount) + parseFloat(taxAmount);
+
+        setTotal({
+          totalNetAmount: _totalNetAmount.toFixed(2),
+          totalTaxAmount: _totalTaxAmount.toFixed(2),
+          totalAmount: _totalAmount.toFixed(2),
+        });
+      });
+    }
+    /* eslint-enable no-underscore-dangle */
+  }, [items]);
 
   const dispatch = useDispatch();
 
@@ -61,6 +100,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   useEffect(() => {
     setValues(data);
     setItems([]);
+    setTotal({});
   }, [variant, isOpen]);
 
   const handleChange = (e) => {
@@ -106,31 +146,15 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
     }
   }, [errors]);
 
-  const paymentTerms = useSelector((state) => state.paymentTerms.data);
-  const clients = useSelector((state) => state.clients.data);
-  const searchList = useSelector((state) => state.search.data);
-  const isSearching = useSelector((state) => state.search.loading);
-  const vatPercentages = useSelector((state) => state.vatPercentages.data);
+  const floatRegExp = /^([0-9]{1,})?(\.)?([0-9]{1,2})?$/;
 
-  const getVATPercentageById = (id) => {
-    if (vatPercentages.length > 0) {
-      return vatPercentages?.find((vatPercentage) => vatPercentage.id === id)?.vatPercentage ?? null;
-    }
-    return null;
-  };
-
-  const floatRegExp = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/;
-
-  const handledSellingPriceChange = (e, id) => {
+  const handledPriceChange = (e, id) => {
     const { name, value } = e.target;
     setItems((prev) =>
       prev.map((item) => {
         if (item.productId === id) {
-          if (value === '') {
-            return { ...item, [name]: 0 };
-          }
-          if (floatRegExp.test(value)) {
-            return { ...item, [name]: parseFloat(value) };
+          if (value.match(floatRegExp)) {
+            return { ...item, [name]: value };
           }
         }
         return item;
@@ -143,8 +167,11 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
     setItems((prev) =>
       prev.map((item) => {
         if (item.productId === id) {
-          if (item.unitSellingPrice > parseFloat(value) || Number.isNaN(value)) {
+          if (item.unitSellingPrice > parseFloat(value) || Number.isNaN(value) || value === '') {
             return { ...item, [name]: parseFloat(item.unitSellingPrice) };
+          }
+          if (item.unitSellingPrice <= parseFloat(value)) {
+            return { ...item, [name]: parseFloat(value) };
           }
         }
         return item;
@@ -152,18 +179,18 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
     );
   };
 
-  const handledDiscountPriceChange = (e, id) => {
+  const checkDiscountPrice = (e, id) => {
     const { name, value } = e.target;
     setItems((prev) =>
       prev.map((item) => {
         if (item.productId === id) {
-          if (parseFloat(value) >= 0) {
-            if (item.marginPrice > parseFloat(value)) {
-              return { ...item, [name]: parseFloat(value) };
-            }
+          if (Number.isNaN(value) || value === '') {
+            return { ...item, [name]: 0 };
+          }
+          if (item.marginPrice < parseFloat(value)) {
             return { ...item, [name]: parseFloat(item.marginPrice) };
           }
-          return { ...item, [name]: 0 };
+          return { ...item, [name]: parseFloat(value) };
         }
         return item;
       })
@@ -198,7 +225,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
       <ModalBody>
         <Form id="modalForm" onSubmit={handleSubmit} noValidate>
           <Row>
-            <Col>
+            <Col md={6}>
               <FormGroup>
                 <Label for="clientIdField">Client</Label>
                 <Input
@@ -221,9 +248,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                 <FormFeedback>{errors?.clientId}</FormFeedback>
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
-            <Col md={4}>
+            <Col md={3}>
               <FormGroup>
                 <Label for="paymentTermIdField">Payment Term</Label>
                 <Input
@@ -286,12 +311,6 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
               <FormGroup>
                 <div
                   style={{
-                    // borderTop: '1px solid #dee2e6',
-                    // borderLeft: '1px solid #dee2e6',
-                    // borderRight: '1px solid #dee2e6',
-                    // borderTopRightRadius: '8px',
-                    // borderTopLeftRadius: '8px',
-
                     border: '1px solid #dee2e6',
                     borderRadius: '8px',
                     height: '80vh',
@@ -343,9 +362,10 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 value={item?.sellingPrice}
                                 className={styles.textAlignRight}
                                 onBlur={(e) => checkSellingPrice(e, item?.productId)}
-                                onChange={(e) => handledSellingPriceChange(e, item?.productId)}
+                                onChange={(e) => handledPriceChange(e, item?.productId)}
                               />
                             </td>
+
                             <td style={{ width: '5%' }}>
                               <Input
                                 type="text"
@@ -366,7 +386,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 onChange={(e) => handledQuantityChange(e, item?.productId)}
                               />
                             </td>
-                            <td style={{ width: '5%' }}>{item?.stockAvailable}</td>
+                            <td style={{ width: '5%' }}>{toFormattedNumber(item?.stockAvailable)}</td>
                             <td style={{ width: '8%' }}>
                               <Input
                                 type="text"
@@ -375,25 +395,32 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 autoComplete="off"
                                 value={item?.discountPrice}
                                 className={styles.textAlignRight}
-                                onChange={(e) => handledDiscountPriceChange(e, item?.productId)}
+                                onBlur={(e) => checkDiscountPrice(e, item?.productId)}
+                                onChange={(e) => handledPriceChange(e, item?.productId)}
                               />
                             </td>
-                            <td style={{ width: '8%' }}>{((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2)}</td>
+                            <td style={{ width: '8%' }}>
+                              {toFormattedNumber(((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2))}
+                            </td>
                             <td style={{ width: '4%' }}>{getVATPercentageById(item?.vatPercentageId)} %</td>
                             <td style={{ width: '8%' }}>
-                              {(
-                                (item.sellingPrice - item.discountPrice) *
-                                item.quantity *
-                                (getVATPercentageById(item?.vatPercentageId) / 100)
-                              ).toFixed(2)}
-                            </td>
-                            <td style={{ width: '8%' }}>
-                              {(
-                                (item.sellingPrice - item.discountPrice) * item.quantity +
-                                (item.sellingPrice - item.discountPrice) *
+                              {toFormattedNumber(
+                                (
+                                  (item.sellingPrice - item.discountPrice) *
                                   item.quantity *
                                   (getVATPercentageById(item?.vatPercentageId) / 100)
-                              ).toFixed(2)}
+                                ).toFixed(2)
+                              )}
+                            </td>
+                            <td style={{ width: '8%' }}>
+                              {toFormattedNumber(
+                                (
+                                  (item.sellingPrice - item.discountPrice) * item.quantity +
+                                  (item.sellingPrice - item.discountPrice) *
+                                    item.quantity *
+                                    (getVATPercentageById(item?.vatPercentageId) / 100)
+                                ).toFixed(2)
+                              )}
                             </td>
                             <td style={{ width: '8%' }}>
                               <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
@@ -425,6 +452,30 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                 ) : null}
                 <FormFeedback>{errors?.items}</FormFeedback>
               </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={{ size: 6, offset: 6 }}>
+              <Row style={{ paddingBottom: '0.5rem', paddingTop: '0.5rem' }}>
+                <Col md={4}>
+                  <p className="d-flex justify-content-between">
+                    <strong>Total Net Amount: </strong>
+                    <strong>{toFormattedNumber(total?.totalNetAmount)} SAR</strong>
+                  </p>
+                </Col>
+                <Col md={4}>
+                  <p className="d-flex justify-content-between">
+                    <strong>Total Tax Amount: </strong>
+                    <strong>{toFormattedNumber(total?.totalTaxAmount)} SAR</strong>
+                  </p>
+                </Col>
+                <Col md={4}>
+                  <p className="d-flex justify-content-between">
+                    <strong>Total Amount: </strong>
+                    <strong>{toFormattedNumber(total?.totalAmount)} SAR</strong>
+                  </p>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Form>

@@ -51,11 +51,7 @@ function AutoComplete({ minLength = 0, options, labelKey = 'name', onClick, onIn
           </li>
         ))}
       </ul>
-    ) : (
-      <div>
-        <em>No product found.</em>
-      </div>
-    );
+    ) : null;
   }
 
   return (

@@ -132,7 +132,7 @@ function ProductsPage() {
                       <td>{getBrandNameById(item.brandId)}</td>
                       <td>{getCategoryNameById(item.categoryId)}</td>
                       <td className={styles.textAlignRight}>{item?.sellingPrice} SAR</td>
-                      <td>{getVATPercentageById(item.vatId)} %</td>
+                      <td>{getVATPercentageById(item?.vatPercentageId)} %</td>
                       <td>{item?.stockQty}</td>
                       {item?.isActive ? <td className={styles.isActiveYes}>Yes</td> : <td className={styles.isActiveNo}>No</td>}
                       {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
