@@ -330,9 +330,9 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                           Product Name
                         </th>
                         <th style={{ width: '6%' }}>Unit Price</th>
+                        <th style={{ width: '8%' }}>Discount</th>
                         <th style={{ width: '5%' }}>Quantity</th>
                         <th style={{ width: '5%' }}>Stock Available</th>
-                        <th style={{ width: '8%' }}>Discount</th>
                         <th style={{ width: '8%' }}>Net Amount</th>
                         <th style={{ width: '4%' }}>VAT %</th>
                         <th style={{ width: '8%' }}>Tax Amount</th>
@@ -365,7 +365,18 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 onChange={(e) => handledPriceChange(e, item?.productId)}
                               />
                             </td>
-
+                            <td style={{ width: '8%' }}>
+                              <Input
+                                type="text"
+                                name="discountPrice"
+                                id="discountPriceField"
+                                autoComplete="off"
+                                value={item?.discountPrice}
+                                className={styles.textAlignRight}
+                                onBlur={(e) => checkDiscountPrice(e, item?.productId)}
+                                onChange={(e) => handledPriceChange(e, item?.productId)}
+                              />
+                            </td>
                             <td style={{ width: '5%' }}>
                               <Input
                                 type="text"
@@ -387,18 +398,6 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                               />
                             </td>
                             <td style={{ width: '5%' }}>{toFormattedNumber(item?.stockAvailable)}</td>
-                            <td style={{ width: '8%' }}>
-                              <Input
-                                type="text"
-                                name="discountPrice"
-                                id="discountPriceField"
-                                autoComplete="off"
-                                value={item?.discountPrice}
-                                className={styles.textAlignRight}
-                                onBlur={(e) => checkDiscountPrice(e, item?.productId)}
-                                onChange={(e) => handledPriceChange(e, item?.productId)}
-                              />
-                            </td>
                             <td style={{ width: '8%' }}>
                               {toFormattedNumber(((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2))}
                             </td>
@@ -455,24 +454,24 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
             </Col>
           </Row>
           <Row>
-            <Col md={{ size: 6, offset: 6 }}>
+            <Col md={{ size: 8, offset: 4 }}>
               <Row style={{ paddingBottom: '0.5rem', paddingTop: '0.5rem' }}>
                 <Col md={4}>
                   <p className="d-flex justify-content-between">
                     <strong>Total Net Amount: </strong>
-                    <strong>{toFormattedNumber(total?.totalNetAmount)} SAR</strong>
+                    <strong>{`${toFormattedNumber(total?.totalNetAmount)} SAR`}</strong>
                   </p>
                 </Col>
-                <Col md={4}>
+                <Col md={4} className={styles.totalBorder}>
                   <p className="d-flex justify-content-between">
                     <strong>Total Tax Amount: </strong>
-                    <strong>{toFormattedNumber(total?.totalTaxAmount)} SAR</strong>
+                    <strong>{`${toFormattedNumber(total?.totalTaxAmount)} SAR`}</strong>
                   </p>
                 </Col>
-                <Col md={4}>
+                <Col md={4} className={styles.totalBorder}>
                   <p className="d-flex justify-content-between">
                     <strong>Total Amount: </strong>
-                    <strong>{toFormattedNumber(total?.totalAmount)} SAR</strong>
+                    <strong>{`${toFormattedNumber(total?.totalAmount)} SAR`}</strong>
                   </p>
                 </Col>
               </Row>

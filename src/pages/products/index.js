@@ -10,6 +10,7 @@ import styles from '../../components/Tables/Tables.module.scss';
 import ProductModal from './ProductModal';
 import { PRODUCT_INITIAL_VALUE } from '../../constant';
 import { getProfileData } from '../../services/profile';
+import toFormattedNumber from '../../utils/general';
 
 function ProductsPage() {
   const profile = getProfileData();
@@ -111,7 +112,7 @@ function ProductsPage() {
                     </th>
                     <th>BRAND</th>
                     <th>CATEGORY</th>
-                    <th>PRICE</th>
+                    <th className={styles.textAlignRight}>UNIT PRICE</th>
                     <th>VAT %</th>
                     <th>STOCK</th>
                     <th>IS ACTIVE?</th>
@@ -131,9 +132,9 @@ function ProductsPage() {
                       </td>
                       <td>{getBrandNameById(item.brandId)}</td>
                       <td>{getCategoryNameById(item.categoryId)}</td>
-                      <td className={styles.textAlignRight}>{item?.sellingPrice} SAR</td>
+                      <td className={styles.textAlignRight}>{`${toFormattedNumber(item?.sellingPrice)} SAR`}</td>
                       <td>{getVATPercentageById(item?.vatPercentageId)} %</td>
-                      <td>{item?.stockQty}</td>
+                      <td>{toFormattedNumber(item?.stockQty)}</td>
                       {item?.isActive ? <td className={styles.isActiveYes}>Yes</td> : <td className={styles.isActiveNo}>No</td>}
                       {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
                         <td>
