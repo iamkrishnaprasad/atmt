@@ -479,9 +479,9 @@ function Footer({ orderId, orderNo }) {
 function Template({ order = '' }) {
   return (
     <Document
-      title={`${order?.type} ${order?.orderNo?.length ? ` - ${order?.orderNo}` : ``}`}
+      title={`${order?.orderNo ?? ''}`}
       author="https://github.com/krishnaprasad1991"
-      subject="Invoice"
+      subject={`${order?.type ?? ''}`}
       keywords=""
       creator="www.atmtksa.com"
       producer="www.atmtksa.com"
