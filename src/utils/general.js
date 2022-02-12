@@ -11,7 +11,7 @@ const toFormattedNumber = (value = 0) => {
   const otherNumbers = value.substring(0, value.length - 3);
   if (otherNumbers !== '') lastThree = `,${lastThree}`;
 
-  return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree + afterPoint;
+  return otherNumbers.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + lastThree + afterPoint;
   /* eslint-enable no-param-reassign */
 };
 

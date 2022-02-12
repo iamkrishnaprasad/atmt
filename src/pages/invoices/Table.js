@@ -3,6 +3,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import Moment from 'moment';
 import styles from '../../components/Tables/Tables.module.scss';
 import Template from '../../pdf/Template';
+import toFormattedNumber from '../../utils/general';
 
 function TableHead() {
   return (
@@ -17,10 +18,14 @@ function TableHead() {
         <th>REF No.</th>
         <th>PAYMENT TERM</th>
         <th>CREATED ON</th>
-        <th>NO. OF ITEMS</th>
-        <th>TOTAL TAX</th>
-        <th>TOTAL AMOUNT</th>
-        <th style={{ width: '15%' }}>ACTIONS</th>
+        <th style={{ width: '5%' }}>NO. OF ITEMS</th>
+        <th style={{ width: '8%' }} className={styles.textAlignRight}>
+          TOTAL TAX
+        </th>
+        <th style={{ width: '8%' }} className={styles.textAlignRight}>
+          TOTAL AMOUNT
+        </th>
+        <th style={{ width: '10%' }}>ACTIONS</th>
       </tr>
     </thead>
   );
@@ -41,8 +46,10 @@ const TableBody = React.memo(({ currentPage, pageSize, data }) => (
         <td>{item?.paymentTerm}</td>
         <td>{item?.issuedDate ? Moment(item?.issuedDate).format('DD-MM-YYYY HH:mm:ss') : '-'}</td>
         <td>{item?.items?.length ?? '0'}</td>
-        <td>{parseFloat(item?.totalTax).toFixed(2)}</td>
-        <td>{(parseFloat(item?.netAmount) + parseFloat(item?.totalTax)).toFixed(2)}</td>
+        <td style={{ textAlign: 'right' }}>{`${toFormattedNumber(parseFloat(item?.totalTax).toFixed(2))} SAR`}</td>
+        <td style={{ textAlign: 'right' }}>
+          {toFormattedNumber((parseFloat(item?.netAmount) + parseFloat(item?.totalTax)).toFixed(2))} SAR
+        </td>
         {/* {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? ( */}
         <td>
           <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
