@@ -42,6 +42,7 @@ function UserModal({ variant, isOpen, toggle, onSubmit, data }) {
 
   useEffect(() => {
     setValues(data);
+    setShowPassword(false);
   }, [variant, isOpen]);
 
   const handleChange = (e) => {
