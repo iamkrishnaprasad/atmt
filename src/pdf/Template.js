@@ -210,11 +210,8 @@ function ClientDetails({ data = '' }) {
       </Text>
 
       <View style={styles.detailsView}>
-        {data?.name?.trim()?.length ? (
-          <Text style={styles.detailsText}>
-            {`${data?.name?.trim()?.toUpperCase()} ${data?.altname?.trim()?.length ? `/ ${data?.altname?.trim()?.toUpperCase()}` : ''}`}
-          </Text>
-        ) : null}
+        {data?.name?.trim()?.length ? <Text style={styles.detailsText}>{data?.name?.trim()?.toUpperCase()}</Text> : null}
+        {data?.altname?.trim()?.length ? <Text style={styles.detailsText}>{data?.altname?.trim()?.toUpperCase()}</Text> : null}
         {data?.buildingno?.trim()?.length || data?.streetno?.trim()?.length || data?.district?.trim()?.length ? (
           <Text style={styles.detailsText}>
             {data?.buildingno?.trim()?.length ? <>{`${data?.buildingno?.trim()?.toUpperCase()}, `}</> : null}

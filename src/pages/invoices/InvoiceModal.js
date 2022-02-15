@@ -284,7 +284,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                   invalid={!!errors?.refNo}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
-                  maxLength="15"
+                  maxLength="30"
                 />
                 <FormFeedback>{errors?.refNo}</FormFeedback>
               </FormGroup>

@@ -96,8 +96,8 @@ function ClientsPage() {
                           {item?.altname ? ` / ${item?.altname}` : null}
                         </td>
                         <td>{item?.phone ? `+966 ${item?.phone}` : '-'}</td>
-                        <td>{item?.vatno}</td>
-                        <td>{item?.crno}</td>
+                        <td>{item?.vatno?.length ? item?.vatno : '-'}</td>
+                        <td>{item?.crno?.length ? item?.crno : '-'}</td>
                         <td>{item?.type === 'B' ? 'Business' : 'Individual'}</td>
                         <td>
                           <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
