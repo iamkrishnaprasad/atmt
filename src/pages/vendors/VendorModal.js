@@ -84,7 +84,7 @@ function VendorModal({ variant, isOpen, toggle, onSubmit, data }) {
                   invalid={!!errors?.name}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
-                  maxLength="50"
+                  maxLength="80"
                 />
                 <FormFeedback>{errors?.name}</FormFeedback>
               </FormGroup>
@@ -104,7 +104,7 @@ function VendorModal({ variant, isOpen, toggle, onSubmit, data }) {
                   invalid={!!errors?.altname}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
-                  maxLength="50"
+                  maxLength="80"
                 />
                 <FormFeedback>{errors?.altname}</FormFeedback>
               </FormGroup>
