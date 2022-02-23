@@ -164,7 +164,7 @@ function ProductModal({ variant, isOpen, toggle, onSubmit, data }) {
                     autoComplete="off"
                     value={discountPercentage}
                     onChange={handleDiscountChange}
-                    disabled={variant === 'readonly' || values?.sellingPrice?.length === 0}
+                    disabled={variant === 'readonly' || values?.sellingPrice?.length === 0 || true}
                     maxLength="3"
                     onInput={(event) => {
                       event.target.value = event.target.value.replace(/\D/g, '');
