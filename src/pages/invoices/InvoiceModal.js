@@ -78,6 +78,12 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
           totalAmount: _totalAmount.toFixed(2),
         });
       });
+    } else {
+      setTotal({
+        totalNetAmount: _totalNetAmount.toFixed(2),
+        totalTaxAmount: _totalTaxAmount.toFixed(2),
+        totalAmount: _totalAmount.toFixed(2),
+      });
     }
     /* eslint-enable no-underscore-dangle */
   }, [items]);
@@ -100,7 +106,11 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   useEffect(() => {
     setValues(data);
     setItems([]);
-    setTotal({});
+    setTotal({
+      totalNetAmount: 0.0,
+      totalTaxAmount: 0.0,
+      totalAmount: 0.0,
+    });
   }, [variant, isOpen]);
 
   const handleChange = (e) => {
@@ -147,13 +157,18 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   }, [errors]);
 
   const floatRegExp = /^([0-9]{1,})?(\.)?([0-9]{1,2})?$/;
+  const floatRegExpWith4Decimal = /^([0-9]{1,})?(\.)?([0-9]{1,4})?$/;
 
   const handledPriceChange = (e, id) => {
     const { name, value } = e.target;
     setItems((prev) =>
       prev.map((item) => {
         if (item.productId === id) {
-          if (value.match(floatRegExp)) {
+          if (name === 'discountPrice') {
+            if (value.match(floatRegExpWith4Decimal)) {
+              return { ...item, [name]: value };
+            }
+          } else if (value.match(floatRegExp)) {
             return { ...item, [name]: value };
           }
         }
@@ -204,11 +219,11 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
         if (item.productId === id) {
           if (value > 0) {
             if (item.stockAvailable >= value) {
-              return { ...item, quantity: parseInt(value, 10) };
+              return { ...item, [name]: parseInt(value, 10) };
             }
-            return { ...item, quantity: parseInt(item.stockAvailable, 10) };
+            return { ...item, [name]: parseInt(item.stockAvailable, 10) };
           }
-          return { ...item, quantity: 1 };
+          return { ...item, [name]: 1 };
         }
         return item;
       })
@@ -329,15 +344,23 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                         <th className={styles.textAlignLeft} style={{ width: '30%' }}>
                           Product Name
                         </th>
-                        <th style={{ width: '6%' }}>Unit Price</th>
+                        <th style={{ width: '8%' }}>Unit Price</th>
                         <th style={{ width: '8%' }}>Discount</th>
                         <th style={{ width: '5%' }}>Quantity</th>
                         <th style={{ width: '5%' }}>Stock Available</th>
-                        <th style={{ width: '8%' }}>Net Amount</th>
-                        <th style={{ width: '4%' }}>VAT %</th>
-                        <th style={{ width: '8%' }}>Tax Amount</th>
-                        <th style={{ width: '8%' }}>Total Amount</th>
-                        <th style={{ width: '8%' }}>Remove</th>
+                        <th className={styles.textAlignRight} style={{ width: '8%' }}>
+                          Net Amount
+                        </th>
+                        <th className={styles.textAlignRight} style={{ width: '4%' }}>
+                          VAT %
+                        </th>
+                        <th className={styles.textAlignRight} style={{ width: '8%' }}>
+                          Tax Amount
+                        </th>
+                        <th className={styles.textAlignRight} style={{ width: '8%' }}>
+                          Total Amount
+                        </th>
+                        <th style={{ width: '6%' }}>Remove</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -398,11 +421,13 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                               />
                             </td>
                             <td style={{ width: '5%' }}>{toFormattedNumber(item?.stockAvailable)}</td>
-                            <td style={{ width: '8%' }}>
+                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
                               {toFormattedNumber(((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2))}
                             </td>
-                            <td style={{ width: '4%' }}>{getVATPercentageById(item?.vatPercentageId)} %</td>
-                            <td style={{ width: '8%' }}>
+                            <td className={styles.textAlignRight} style={{ width: '4%' }}>
+                              {getVATPercentageById(item?.vatPercentageId)} %
+                            </td>
+                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
                               {toFormattedNumber(
                                 (
                                   (item.sellingPrice - item.discountPrice) *
@@ -411,7 +436,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 ).toFixed(2)
                               )}
                             </td>
-                            <td style={{ width: '8%' }}>
+                            <td className={styles.textAlignRight} style={{ width: '8%' }}>
                               {toFormattedNumber(
                                 (
                                   (item.sellingPrice - item.discountPrice) * item.quantity +
@@ -459,19 +484,19 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                 <Col md={4}>
                   <p className="d-flex justify-content-between">
                     <strong>Total Net Amount: </strong>
-                    <strong>{`${toFormattedNumber(total?.totalNetAmount)} SAR`}</strong>
+                    <strong>{`${toFormattedNumber(total?.totalNetAmount ?? 0)} SAR`}</strong>
                   </p>
                 </Col>
                 <Col md={4} className={styles.totalBorder}>
                   <p className="d-flex justify-content-between">
                     <strong>Total Tax Amount: </strong>
-                    <strong>{`${toFormattedNumber(total?.totalTaxAmount)} SAR`}</strong>
+                    <strong>{`${toFormattedNumber(total?.totalTaxAmount ?? 0)} SAR`}</strong>
                   </p>
                 </Col>
                 <Col md={4} className={styles.totalBorder}>
                   <p className="d-flex justify-content-between">
                     <strong>Total Amount: </strong>
-                    <strong>{`${toFormattedNumber(total?.totalAmount)} SAR`}</strong>
+                    <strong>{`${toFormattedNumber(total?.totalAmount ?? 0)} SAR`}</strong>
                   </p>
                 </Col>
               </Row>

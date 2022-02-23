@@ -1,6 +1,7 @@
 import React from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import Moment from 'moment';
+import { Spinner } from 'reactstrap';
 import styles from '../../components/Tables/Tables.module.scss';
 import Template from '../../pdf/Template';
 import toFormattedNumber from '../../utils/general';
@@ -9,15 +10,15 @@ function TableHead() {
   return (
     <thead>
       <tr>
-        <th style={{ width: '7%' }}>SR NO.</th>
-        <th style={{ width: '5%' }}>ORDER NO.</th>
-        <th style={{ width: '10%' }}>INVOICE NO.</th>
+        <th style={{ width: '5%' }}>SR NO.</th>
+        <th style={{ width: '6%' }}>ORDER NO.</th>
+        <th style={{ width: '9%' }}>INVOICE NO.</th>
         <th style={{ width: '23%' }} className={styles.textAlignLeft}>
           BILLED TO
         </th>
-        <th>REF No.</th>
-        <th>PAYMENT TERM</th>
-        <th>CREATED ON</th>
+        <th style={{ width: '10%' }}>REF No.</th>
+        <th style={{ width: '11%' }}>PAYMENT TERM</th>
+        <th style={{ width: '10%' }}>CREATED ON</th>
         <th style={{ width: '5%' }}>NO. OF ITEMS</th>
         <th style={{ width: '8%' }} className={styles.textAlignRight}>
           TOTAL TAX
@@ -25,7 +26,7 @@ function TableHead() {
         <th style={{ width: '8%' }} className={styles.textAlignRight}>
           TOTAL AMOUNT
         </th>
-        <th style={{ width: '10%' }}>ACTIONS</th>
+        <th style={{ width: '5%' }}>ACTIONS</th>
       </tr>
     </thead>
   );
@@ -42,37 +43,27 @@ const TableBody = React.memo(({ currentPage, pageSize, data }) => (
           {item?.client?.name}
           {item?.client?.altname ? ` / ${item?.client?.altname}` : null}
         </td>
-        <td>{item?.refNo ?? '-'}</td>
+        <td>{item?.refNo.length ? item?.refNo : '-'}</td>
         <td>{item?.paymentTerm}</td>
         <td>{item?.issuedDate ? Moment(item?.issuedDate).format('DD-MM-YYYY HH:mm:ss') : '-'}</td>
         <td>{item?.items?.length ?? '0'}</td>
-        <td style={{ textAlign: 'right' }}>{`${toFormattedNumber(parseFloat(item?.totalTax).toFixed(2))} SAR`}</td>
-        <td style={{ textAlign: 'right' }}>
-          {toFormattedNumber((parseFloat(item?.netAmount) + parseFloat(item?.totalTax)).toFixed(2))} SAR
+        <td className={styles.textAlignRight}>{`${toFormattedNumber(parseFloat(item?.totalTax).toFixed(2))} SAR`}</td>
+        <td className={styles.textAlignRight}>
+          {`${toFormattedNumber((parseFloat(item?.netAmount) + parseFloat(item?.totalTax)).toFixed(2))} SAR`}
         </td>
-        {/* {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? ( */}
         <td>
           <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
-            {/* <i
-                            style={{ cursor: 'pointer' }}
-                            className="eva eva-edit-2-outline"
-                            onClick={() => {
-                              openModal('edit', item);
-                            }}
-                          /> */}
             <PDFDownloadLink document={<Template order={item} />} fileName={item?.orderNo}>
-              {({ loading }) => (loading ? 'Loading document...' : <i style={{ cursor: 'pointer' }} className="fa fa-download" />)}
+              {({ loading }) =>
+                loading ? (
+                  <Spinner style={{ width: '1.5rem', height: '1.5rem' }} />
+                ) : (
+                  <i style={{ cursor: 'pointer' }} className="fa fa-download" />
+                )
+              }
             </PDFDownloadLink>
-            {/* <i
-                            style={{ cursor: 'pointer' }}
-                            className="eva eva-trash-2-outline"
-                            onClick={() => {
-                              alert(`Delete ${item?.id} Product`);
-                            }}
-                          /> */}
           </div>
         </td>
-        {/* ) : null} */}
       </tr>
     ))}
   </tbody>

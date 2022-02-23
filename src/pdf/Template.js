@@ -374,7 +374,7 @@ function TableCell({ data, srno }) {
   const quantity = data?.quantity ?? 0;
   const discountPrice = data?.discountPrice ?? 0;
   const vatPercentage = data?.vatPercentage ?? 0;
-  const totalDiscountPrice = (discountPrice * quantity).toFixed(2);
+  const totalDiscountPrice = discountPrice * quantity;
   const netAmount = (sellingPrice * quantity - totalDiscountPrice).toFixed(2);
   const taxAmount = (netAmount * (vatPercentage / 100)).toFixed(2);
   const totalAmount = (parseFloat(netAmount) + parseFloat(taxAmount)).toFixed(2);
