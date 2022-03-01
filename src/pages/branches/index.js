@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Col, Pagination, PaginationItem, PaginationLink, Row, Table } from 'reactstrap';
-
 import classNames from 'classnames';
+import { Col, Row, Table } from 'reactstrap';
+import Pagination from '../../components/Pagination';
 import Widget from '../../components/Widget/Widget';
-
 import styles from '../../components/Tables/Tables.module.scss';
 import BranchModal from './BranchModal';
 import { BRANCH_INITIAL_VALUE } from '../../constant';
@@ -12,16 +11,10 @@ import { addBranch, updateBranch } from '../../redux';
 
 function BranchesPage() {
   const dispatch = useDispatch();
-  const branches = useSelector((state) => state.branches.data);
+  const data = useSelector((state) => state.branches.data);
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const pagesCount = Math.ceil(branches.length / pageSize);
-
-  const setTablePage = (e, index) => {
-    e.preventDefault();
-    setCurrentPage(index);
-  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -86,9 +79,9 @@ function BranchesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {branches.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((item, index) => (
+                  {data.slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize).map((item, index) => (
                     <tr key={item?.id}>
-                      <td>{currentPage * pageSize + (index + 1)}</td>
+                      <td>{(currentPage - 1) * pageSize + (index + 1)}</td>
                       <td className={styles.textAlignLeft}>{item?.name}</td>
                       <td>{item?.phone ? `+966 ${item?.phone}` : '-'}</td>
                       <td>{item?.landline ? `+966 ${item?.landline}` : '-'}</td>
@@ -110,37 +103,19 @@ function BranchesPage() {
                               openModal('edit', item);
                             }}
                           />
-                          {/* <i
-                            style={{ cursor: 'pointer' }}
-                            className="eva eva-trash-2-outline"
-                            onClick={() => {
-                              alert(`Delete ${item?.id} Branch`);
-                            }}
-                          /> */}
                         </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
-              {pagesCount > 1 ? (
-                <Pagination className="pagination-with-border">
-                  <PaginationItem disabled={currentPage <= 0}>
-                    <PaginationLink onClick={(e) => setTablePage(e, currentPage - 1)} previous href="#top" />
-                  </PaginationItem>
-                  {[...Array(pagesCount)].map((page, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <PaginationItem active={i === currentPage} key={i}>
-                      <PaginationLink onClick={(e) => setTablePage(e, i)} href="#top">
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem disabled={currentPage >= pagesCount - 1}>
-                    <PaginationLink onClick={(e) => setTablePage(e, currentPage + 1)} next href="#top" />
-                  </PaginationItem>
-                </Pagination>
-              ) : null}
+              <Pagination
+                currentPage={currentPage}
+                totalCount={data.length}
+                pageSize={pageSize}
+                siblingCount={2}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
           </Widget>
         </Col>

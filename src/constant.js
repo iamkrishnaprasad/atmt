@@ -130,3 +130,5 @@ export const INVOICE_INITIAL_VALUE = {
     // },
   ],
 };
+
+export const DOTS = '...';

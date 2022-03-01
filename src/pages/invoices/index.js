@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Col, Pagination, PaginationItem, PaginationLink, Row, Table } from 'reactstrap';
-
 import classNames from 'classnames';
-import { addInvoice, fetchInvoices, updateInvoice } from '../../redux';
-
+import { Col, Row, Table } from 'reactstrap';
+import Pagination from '../../components/Pagination';
 import Widget from '../../components/Widget/Widget';
 import styles from '../../components/Tables/Tables.module.scss';
-
-import { INVOICE_INITIAL_VALUE } from '../../constant';
 import InvoiceModal from './InvoiceModal';
-
+import { INVOICE_INITIAL_VALUE } from '../../constant';
+import { addInvoice, fetchInvoices, updateInvoice } from '../../redux';
 import { TableBody, TableHead } from './Table';
 
 function InvoicesPage() {
@@ -21,14 +18,8 @@ function InvoicesPage() {
     dispatch(fetchInvoices());
   }, []);
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const pagesCount = Math.ceil(data.length / pageSize);
-
-  const setTablePage = (e, index) => {
-    e.preventDefault();
-    setCurrentPage(index);
-  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -82,23 +73,13 @@ function InvoicesPage() {
                 <TableHead />
                 <TableBody currentPage={currentPage} pageSize={pageSize} data={data} />
               </Table>
-              {pagesCount > 1 ? (
-                <Pagination className="pagination-with-border">
-                  <PaginationItem disabled={currentPage <= 0}>
-                    <PaginationLink onClick={(e) => setTablePage(e, currentPage - 1)} previous href="#top" />
-                  </PaginationItem>
-                  {[...Array(pagesCount)].map((page, i) => (
-                    <PaginationItem active={i === currentPage} key={i}>
-                      <PaginationLink onClick={(e) => setTablePage(e, i)} href="#top">
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem disabled={currentPage >= pagesCount - 1}>
-                    <PaginationLink onClick={(e) => setTablePage(e, currentPage + 1)} next href="#top" />
-                  </PaginationItem>
-                </Pagination>
-              ) : null}
+              <Pagination
+                currentPage={currentPage}
+                totalCount={data.length}
+                pageSize={pageSize}
+                siblingCount={2}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
           </Widget>
         </Col>

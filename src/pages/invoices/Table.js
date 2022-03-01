@@ -34,9 +34,9 @@ function TableHead() {
 
 const TableBody = React.memo(({ currentPage, pageSize, data }) => (
   <tbody>
-    {data?.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((item, index) => (
-      <tr key={`${item?.id}`}>
-        <td>{currentPage * pageSize + (index + 1)}</td>
+    {data?.slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize).map((item, index) => (
+      <tr key={item?.id}>
+        <td>{(currentPage - 1) * pageSize + (index + 1)}</td>
         <td>{item?.id.replace('ORD', '')}</td>
         <td>{item?.orderNo}</td>
         <td className={styles.textAlignLeft}>
