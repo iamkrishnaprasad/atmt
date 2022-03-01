@@ -399,7 +399,7 @@ function TableCell({ data, srno }) {
         <Text style={styles.tableText}>{toFormattedNumber(sellingPrice)}</Text>
       </View>
       <View style={[styles.tableCellBox, { width: '28px' }]}>
-        <Text style={styles.tableText}>{quantity}</Text>
+        <Text style={styles.tableText}>{toFormattedNumber(quantity)}</Text>
       </View>
       <View style={[styles.tableCellBox, { width: '32px' }]}>
         <Text style={styles.tableText}>{toFormattedNumber(totalDiscountPrice)}</Text>

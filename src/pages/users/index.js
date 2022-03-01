@@ -1,20 +1,18 @@
 /* eslint-disable no-param-reassign */
-
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Col, Pagination, PaginationItem, PaginationLink, Row, Table } from 'reactstrap';
-
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
+import { Col, Row, Table } from 'reactstrap';
+import Pagination from '../../components/Pagination';
 import Widget from '../../components/Widget/Widget';
-
 import styles from '../../components/Tables/Tables.module.scss';
+import UserModal from './UserModal';
 import { USER_INITIAL_VALUE } from '../../constant';
 import { addUser, fetchUsers, updateUser } from '../../redux';
-import UserModal from './UserModal';
 
 function UsersPage() {
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.users.data);
+  const data = useSelector((state) => state.users.data);
   useEffect(() => {
     dispatch(fetchUsers());
   }, []);
@@ -35,14 +33,8 @@ function UsersPage() {
     return null;
   };
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const pagesCount = Math.ceil(users.length / pageSize);
-
-  const setTablePage = (e, index) => {
-    e.preventDefault();
-    setCurrentPage(index);
-  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -106,12 +98,12 @@ function UsersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users
-                    .slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+                  {data
+                    .slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize)
                     .filter((item) => item?.userRoleId !== 'USRRL00001')
                     .map((item, index) => (
-                      <tr key={`${item?.id}`}>
-                        <td>{currentPage * pageSize + (index + 1)}</td>
+                      <tr key={item?.id}>
+                        <td>{(currentPage - 1) * pageSize + (index + 1)}</td>
                         <td className={styles.textAlignLeft}>{item?.name}</td>
                         <td>{item?.username}</td>
                         <td>{getUserRoleById(item?.userRoleId)}</td>
@@ -140,23 +132,13 @@ function UsersPage() {
                     ))}
                 </tbody>
               </Table>
-              {pagesCount > 1 ? (
-                <Pagination className="pagination-with-border">
-                  <PaginationItem disabled={currentPage <= 0}>
-                    <PaginationLink onClick={(e) => setTablePage(e, currentPage - 1)} previous href="#top" />
-                  </PaginationItem>
-                  {[...Array(pagesCount)].map((page, i) => (
-                    <PaginationItem active={i === currentPage} key={i}>
-                      <PaginationLink onClick={(e) => setTablePage(e, i)} href="#top">
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem disabled={currentPage >= pagesCount - 1}>
-                    <PaginationLink onClick={(e) => setTablePage(e, currentPage + 1)} next href="#top" />
-                  </PaginationItem>
-                </Pagination>
-              ) : null}
+              <Pagination
+                currentPage={currentPage}
+                totalCount={data.length}
+                pageSize={pageSize}
+                siblingCount={2}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
           </Widget>
         </Col>
