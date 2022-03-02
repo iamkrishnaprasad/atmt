@@ -32,7 +32,7 @@ function TableHead() {
   );
 }
 
-const TableBody = React.memo(({ currentPage, pageSize, data }) => (
+const TableBody = React.memo(({ currentPage, pageSize, data, onClickOpen }) => (
   <tbody>
     {data?.slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize).map((item, index) => (
       <tr key={item?.id}>
@@ -53,15 +53,13 @@ const TableBody = React.memo(({ currentPage, pageSize, data }) => (
         </td>
         <td>
           <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
-            <PDFDownloadLink document={<Template order={item} />} fileName={item?.orderNo}>
-              {({ loading }) =>
-                loading ? (
-                  <Spinner style={{ width: '1.5rem', height: '1.5rem' }} />
-                ) : (
-                  <i style={{ cursor: 'pointer' }} className="fa fa-download" />
-                )
-              }
-            </PDFDownloadLink>
+            <i
+              style={{ cursor: 'pointer' }}
+              className="eva eva-book-open-outline"
+              onClick={() => {
+                onClickOpen(item);
+              }}
+            />
           </div>
         </td>
       </tr>
