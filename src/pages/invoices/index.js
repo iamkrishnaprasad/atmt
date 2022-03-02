@@ -71,7 +71,14 @@ function InvoicesPage() {
             <div className="widget-table-overflow">
               <Table className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)} responsive>
                 <TableHead />
-                <TableBody currentPage={currentPage} pageSize={pageSize} data={data} />
+                <TableBody
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                  data={data}
+                  onClickOpen={(payload) => {
+                    openModal('readonly', payload);
+                  }}
+                />
               </Table>
               <Pagination
                 currentPage={currentPage}
