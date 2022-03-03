@@ -555,7 +555,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                   <Col md={4} className={styles.totalBorder}>
                     <p className="d-flex justify-content-between">
                       <strong>Total Amount: </strong>
-                      <strong>{`${toFormattedNumber(parseFloat(data?.netAmount) + parseFloat(data?.totalTax))} SAR`}</strong>
+                      <strong>{`${toFormattedNumber((parseFloat(data?.netAmount) + parseFloat(data?.totalTax)).toFixed(2))} SAR`}</strong>
                     </p>
                   </Col>
                 </Row>
