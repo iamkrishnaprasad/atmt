@@ -402,7 +402,7 @@ function TableCell({ data, srno }) {
         <Text style={styles.tableText}>{toFormattedNumber(quantity)}</Text>
       </View>
       <View style={[styles.tableCellBox, { width: '32px' }]}>
-        <Text style={styles.tableText}>{toFormattedNumber(totalDiscountPrice)}</Text>
+        <Text style={styles.tableText}>{toFormattedNumber(parseFloat(totalDiscountPrice).toFixed(4)?.replace('.0000', '.00'))}</Text>
       </View>
       <View style={[styles.tableCellBox, { width: '42px' }]}>
         <Text style={styles.tableText}>{toFormattedNumber(netAmount)}</Text>

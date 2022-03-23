@@ -510,7 +510,11 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                           <td>{item?.uom}</td>
                           <td className={styles.textAlignRight}>{item?.sellingPrice}</td>
                           <td className={styles.textAlignRight}>{item?.quantity}</td>
-                          <td className={styles.textAlignRight}>{parseFloat(item?.discountPrice) * parseFloat(item?.quantity)}</td>
+                          <td className={styles.textAlignRight}>
+                            {toFormattedNumber(
+                              (parseFloat(item?.discountPrice) * parseFloat(item?.quantity)).toFixed(4)?.replace('.0000', '.00')
+                            )}
+                          </td>
                           <td className={styles.textAlignRight}>
                             {toFormattedNumber(((item.sellingPrice - item.discountPrice) * item.quantity).toFixed(2))}
                           </td>
