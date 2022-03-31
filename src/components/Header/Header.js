@@ -96,17 +96,17 @@ function Header() {
             {/* <span className={`${s.avatar} rounded-circle float-left mr-2`}>
               <img src={userImg} alt="User" />
             </span> */}
-            <span className="small d-none d-sm-block ml-1 mr-2 body-1">{profile.name}</span>
+            <span className="small d-sm-block ml-1 mr-2 body-1">{profile.name}</span>
           </DropdownToggle>
           <DropdownMenu right className="navbar-dropdown profile-dropdown" style={{ width: '194px' }}>
-            <DropdownItem
+            {/* <DropdownItem
               className={s.dropdownProfileItem}
               // eslint-disable-next-line react/no-unstable-nested-components
               onClick={() => <Redirect to="/profile" />}
             >
               <ProfileIcon />
               <span>Profile</span>
-            </DropdownItem>
+            </DropdownItem> */}
             <DropdownItem
               onClick={() => doLogout()}
               className={s.dropdownProfileItem}

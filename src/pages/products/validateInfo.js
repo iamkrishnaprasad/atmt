@@ -15,15 +15,15 @@ export default function validateInfo(values, variant = '') {
     errors.lowStockValue = 'Low stock alert value is required.';
   }
 
-  if (!values?.vatPercentageId?.trim()) {
+  if (!values?.vatPercentageId?.trim() || values?.vatPercentageId?.trim() === '-1') {
     errors.vatPercentageId = 'VAT Percentage is required.';
   }
 
-  if (!values?.brandId?.trim()) {
+  if (!values?.brandId?.trim() || values?.brandId?.trim() === '-1') {
     errors.brandId = 'Brand is required.';
   }
 
-  if (!values?.categoryId?.trim()) {
+  if (!values?.categoryId?.trim() || values?.categoryId?.trim() === '-1') {
     errors.categoryId = 'Category is required.';
   }
 
@@ -31,7 +31,7 @@ export default function validateInfo(values, variant = '') {
     errors.branchId = 'Branch is required.';
   }
 
-  if (!values?.unitTypeId?.trim()) {
+  if (!values?.unitTypeId?.trim() || values?.unitTypeId?.trim() === '-1') {
     errors.unitTypeId = 'Unit Type is required.';
   }
 

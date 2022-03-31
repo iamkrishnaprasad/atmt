@@ -8,15 +8,17 @@ export default function validateInfo(values, variant = '') {
     errors.name = 'Vendor name should have atleast 5 characters.';
   }
 
-  if (!values?.vatno?.trim()) {
-    errors.vatno = 'VAT no. is required.';
-  } else if (values?.vatno?.trim().length !== 0 && values?.vatno?.trim().length < 15) {
+  // if (!values?.vatno?.trim()) {
+  //   errors.vatno = 'VAT no. is required.';
+  // }
+  if (values?.vatno?.trim().length !== 0 && values?.vatno?.trim().length < 15) {
     errors.vatno = 'Enter a valid VAT no.';
   }
 
-  if (!values?.crno?.trim()) {
-    errors.crno = 'CR no. is required.';
-  } else if (values?.crno?.trim().length !== 0 && values?.crno?.trim().length < 10) {
+  // if (!values?.crno?.trim()) {
+  //   errors.crno = 'CR no. is required.';
+  // }
+  if (values?.crno?.trim().length !== 0 && values?.crno?.trim().length < 10) {
     errors.crno = 'Enter a valid CR no.';
   }
 

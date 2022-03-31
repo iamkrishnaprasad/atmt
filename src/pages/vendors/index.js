@@ -88,8 +88,8 @@ function VendorsPage() {
                       </td>
                       <td>{item?.phone ? `+966 ${item?.phone}` : '-'}</td>
                       <td>{item?.landline ? `+966 ${item?.landline}` : '-'}</td>
-                      <td>{item?.vatno}</td>
-                      <td>{item?.crno}</td>
+                      <td>{item?.vatno?.length ? item?.vatno : '-'}</td>
+                      <td>{item?.crno?.length ? item?.crno : '-'}</td>
                       <td>
                         <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
                           <i
