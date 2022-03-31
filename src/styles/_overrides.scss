@@ -603,9 +603,9 @@ input[type='checkbox'] .styled:checked + label::after {
   font-size: 85%;
   font-weight: 600;
 
-  @media (max-width: breakpoint-max(xs)) {
-    display: none;
-  }
+  // @media (max-width: breakpoint-max(xs)) {
+  //   display: none;
+  // }
 }
 
 .modal-backdrop {

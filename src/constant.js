@@ -120,15 +120,16 @@ export const INVOICE_INITIAL_VALUE = {
   paymentTermId: '',
   branchId: '',
   clientId: '',
-  items: [
-    // {
-    //   productId: '',
-    //   vatPercentageId: '',
-    //   sellingPrice: '',
-    //   discountPrice: '',
-    //   quantity: '',
-    // },
-  ],
+  items: [],
 };
 
 export const DOTS = '...';
+
+export const PURCHASE_ORDER_INITIAL_VALUE = {
+  branchId: '',
+  items: [],
+  paymentTermId: '',
+  purchasedOn: '',
+  refNo: '',
+  vendorId: '',
+};

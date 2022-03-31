@@ -50,6 +50,8 @@ function ProductsPage() {
   const [formData, setFormData] = useState('');
   const [formType, setFormType] = useState('');
 
+  const [keyword, setKeyword] = useState('');
+
   const openModal = (type, payload = '') => {
     setFormType(type);
     switch (type) {
@@ -81,18 +83,43 @@ function ProductsPage() {
           <Widget>
             <div className={styles.tableTitle}>
               <div className="headline-2">Products</div>
-              {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
-                <div
-                  onClick={() => {
-                    openModal('add');
-                  }}
-                  className="d-flex align-items-center"
-                  style={{ cursor: 'pointer' }}
-                >
-                  <i style={{ margin: '0 10px' }} className="eva eva-plus-square-outline" />
-                  <span>Add Product</span>
+              <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center" style={{ minWidth: '250px', margin: '0 5px', position: 'relative' }}>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search a product"
+                    maxLength="15"
+                    value={keyword}
+                    onChange={(e) => {
+                      setKeyword(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                  {keyword.length ? (
+                    <i
+                      className="eva eva-close-circle-outline"
+                      style={{ position: 'absolute', right: '8px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        setKeyword('');
+                        setCurrentPage(1);
+                      }}
+                    />
+                  ) : null}
                 </div>
-              ) : null}
+                {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
+                  <div
+                    onClick={() => {
+                      openModal('add');
+                    }}
+                    className="d-flex align-items-center"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <i style={{ margin: '0 10px' }} className="eva eva-plus-square-outline" />
+                    <span>Add Product</span>
+                  </div>
+                ) : null}
+              </div>
             </div>
             <div className="widget-table-overflow">
               <Table className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)} responsive>
@@ -115,40 +142,51 @@ function ProductsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize).map((item, index) => (
-                    <tr key={item?.id}>
-                      <td>{(currentPage - 1) * pageSize + (index + 1)}</td>
-                      <td>{item?.id.replace('PRODT', '')}</td>
-                      <td className={styles.textAlignLeft}>
-                        {item?.name}
-                        {item?.altname ? ` / ${item?.altname}` : null}
-                      </td>
-                      <td>{getBrandNameById(item.brandId)}</td>
-                      <td>{getCategoryNameById(item.categoryId)}</td>
-                      <td className={styles.textAlignRight}>{`${toFormattedNumber(item?.sellingPrice)} SAR`}</td>
-                      <td>{getVATPercentageById(item?.vatPercentageId)} %</td>
-                      <td>{toFormattedNumber(item?.stockQty)}</td>
-                      {item?.isActive ? <td className={styles.isActiveYes}>Yes</td> : <td className={styles.isActiveNo}>No</td>}
-                      {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
-                        <td>
-                          <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
-                            <i
-                              style={{ cursor: 'pointer' }}
-                              className="eva eva-edit-2-outline"
-                              onClick={() => {
-                                openModal('edit', item);
-                              }}
-                            />
-                          </div>
+                  {data
+                    .filter((product) => {
+                      if (`${product.id.replace('PRODT', '')} ${product.name}`.toLowerCase().includes(keyword)) return product;
+                      return false;
+                    })
+                    .slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize)
+                    .map((item, index) => (
+                      <tr key={item?.id}>
+                        <td>{(currentPage - 1) * pageSize + (index + 1)}</td>
+                        <td>{item?.id.replace('PRODT', '')}</td>
+                        <td className={styles.textAlignLeft}>
+                          {item?.name}
+                          {item?.altname ? ` / ${item?.altname}` : null}
                         </td>
-                      ) : null}
-                    </tr>
-                  ))}
+                        <td>{getBrandNameById(item.brandId)}</td>
+                        <td>{getCategoryNameById(item.categoryId)}</td>
+                        <td className={styles.textAlignRight}>{`${toFormattedNumber(item?.sellingPrice)} SAR`}</td>
+                        <td>{getVATPercentageById(item?.vatPercentageId)} %</td>
+                        <td>{toFormattedNumber(item?.stockQty)}</td>
+                        {item?.isActive ? <td className={styles.isActiveYes}>Yes</td> : <td className={styles.isActiveNo}>No</td>}
+                        {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
+                          <td>
+                            <div style={{ justifyContent: 'space-evenly' }} className="d-flex">
+                              <i
+                                style={{ cursor: 'pointer' }}
+                                className="eva eva-edit-2-outline"
+                                onClick={() => {
+                                  openModal('edit', item);
+                                }}
+                              />
+                            </div>
+                          </td>
+                        ) : null}
+                      </tr>
+                    ))}
                 </tbody>
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalCount={data.length}
+                totalCount={
+                  data.filter((product) => {
+                    if (`${product.id.replace('PRODT', '')} ${product.name}`.toLowerCase().includes(keyword)) return product;
+                    return false;
+                  }).length
+                }
                 pageSize={pageSize}
                 siblingCount={2}
                 onPageChange={(page) => setCurrentPage(page)}
