@@ -34,6 +34,7 @@ import {
   fetchCategories,
   fetchClients,
   fetchPaymentTerms,
+  fetchProducts,
   fetchProfile,
   fetchUnitTypes,
   fetchUserRoles,
@@ -56,6 +57,7 @@ function Layout() {
     dispatch(fetchVendors());
     dispatch(fetchClients());
     dispatch(fetchPaymentTerms());
+    dispatch(fetchProducts());
 
     // Masters Redux
     dispatch(fetchBranches());

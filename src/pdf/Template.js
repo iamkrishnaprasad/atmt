@@ -68,7 +68,7 @@ function CompanyDetails({ data }) {
   return (
     <View style={styles.companyDetailsView}>
       {data?.name ? <Text style={styles.companyDetailsNameText}>{data?.name.trim()?.toUpperCase()}</Text> : null}
-      {data?.altname ? <Text style={styles.companyDetailsNameText}>{data?.altname}</Text> : null}
+      {data?.altName ? <Text style={styles.companyDetailsNameText}>{data?.altName}</Text> : null}
       <View style={styles.companyDetailsAddressView}>
         <View>
           {data?.buildingno?.trim()?.length || data?.streetno?.trim()?.length || data?.district?.trim()?.length ? (
@@ -211,7 +211,7 @@ function ClientDetails({ data = '' }) {
 
       <View style={styles.detailsView}>
         {data?.name?.trim()?.length ? <Text style={styles.detailsText}>{data?.name?.trim()?.toUpperCase()}</Text> : null}
-        {data?.altname?.trim()?.length ? <Text style={styles.detailsText}>{data?.altname?.trim()?.toUpperCase()}</Text> : null}
+        {data?.altName?.trim()?.length ? <Text style={styles.detailsText}>{data?.altName?.trim()?.toUpperCase()}</Text> : null}
         {data?.buildingno?.trim()?.length || data?.streetno?.trim()?.length || data?.district?.trim()?.length ? (
           <Text style={styles.detailsText}>
             {data?.buildingno?.trim()?.length ? <>{`${data?.buildingno?.trim()?.toUpperCase()}, `}</> : null}

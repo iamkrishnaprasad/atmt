@@ -38,9 +38,9 @@ function ProductsPage() {
   };
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchProducts());
+  // }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 150;
@@ -144,7 +144,8 @@ function ProductsPage() {
                 <tbody>
                   {data
                     .filter((product) => {
-                      if (`${product.id.replace('PRODT', '')} ${product.name}`.toLowerCase().includes(keyword)) return product;
+                      if (`${product.id.replace('PRODT', '')} ${product.name}`.toLowerCase().includes(keyword.toLowerCase()))
+                        return product;
                       return false;
                     })
                     .slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize)
@@ -154,7 +155,7 @@ function ProductsPage() {
                         <td>{item?.id.replace('PRODT', '')}</td>
                         <td className={styles.textAlignLeft}>
                           {item?.name}
-                          {item?.altname ? ` / ${item?.altname}` : null}
+                          {item?.altName ? ` / ${item?.altName}` : null}
                         </td>
                         <td>{getBrandNameById(item.brandId)}</td>
                         <td>{getCategoryNameById(item.categoryId)}</td>

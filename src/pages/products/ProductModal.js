@@ -120,122 +120,21 @@ function ProductModal({ variant, isOpen, toggle, onSubmit, data }) {
             <FormFeedback>{errors?.name}</FormFeedback>
           </FormGroup>
           <FormGroup>
-            <Label for="altnameField">Product Name (in arabic)</Label>
+            <Label for="altNameField">Product Name (in arabic)</Label>
             <Input
               type="text"
-              name="altname"
-              id="altnameField"
+              name="altName"
+              id="altNameField"
               placeholder="Enter Product Name (in arabic)"
               autoComplete="off"
-              value={values?.altname}
-              invalid={!!errors?.altname}
+              value={values?.altName}
+              invalid={!!errors?.altName}
               onChange={handleChange}
               disabled={variant === 'readonly'}
               maxLength="70"
             />
-            <FormFeedback>{errors?.altname}</FormFeedback>
+            <FormFeedback>{errors?.altName}</FormFeedback>
           </FormGroup>
-          <Row>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="sellingPriceField">Selling Price</Label>
-                <Input
-                  type="text"
-                  name="sellingPrice"
-                  id="sellingPriceField"
-                  placeholder="Enter Selling Price"
-                  autoComplete="off"
-                  value={values?.sellingPrice}
-                  invalid={!!errors?.sellingPrice}
-                  onChange={handleSellingPriceChange}
-                  disabled={variant === 'readonly'}
-                />
-                <FormFeedback>{errors?.sellingPrice}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="discountPerentageField">Discount Percantage</Label>
-                <InputGroup>
-                  <Input
-                    type="text"
-                    name="discountPerentage"
-                    id="discountPerentageField"
-                    autoComplete="off"
-                    value={discountPercentage}
-                    onChange={handleDiscountChange}
-                    disabled={variant === 'readonly' || values?.sellingPrice?.length === 0 || true}
-                    maxLength="3"
-                    onInput={(event) => {
-                      event.target.value = event.target.value.replace(/\D/g, '');
-                      event.target.value = event.target.value <= 100 ? event.target.value : 0;
-                      event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
-                    }}
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                  <InputGroupText
-                    style={{
-                      borderTopRightRadius: '8px',
-                      borderTopLeftRadius: '0px',
-                      borderBottomRightRadius: '8px',
-                      borderBottomLeftRadius: '0px',
-                    }}
-                  >
-                    %
-                  </InputGroupText>
-                </InputGroup>
-              </FormGroup>
-            </Col>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="discountPriceField">Discount Price</Label>
-                <Input
-                  type="text"
-                  name="discountPrice"
-                  id="discountPriceField"
-                  placeholder="Enter Discount Price"
-                  autoComplete="off"
-                  value={values?.discountPrice}
-                  invalid={!!errors?.discountPrice}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly' || true}
-                />
-                <FormFeedback>{errors?.discountPrice}</FormFeedback>
-              </FormGroup>
-            </Col>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="lowStockValueField">Low Stock Alert Value</Label>
-                <Input
-                  type="text"
-                  name="lowStockValue"
-                  id="lowStockValueField"
-                  placeholder="Enter Low Stock Alert Value"
-                  autoComplete="off"
-                  value={values?.lowStockValue}
-                  invalid={!!errors?.lowStockValue}
-                  onChange={handleChange}
-                  disabled={variant === 'readonly'}
-                  maxLength="2"
-                  onInput={(event) => {
-                    event.target.value = event.target.value.replace(/\D/g, '');
-                    event.target.value = event.target.value <= 200 ? event.target.value : 0;
-                    event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
-                  }}
-                  onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <FormFeedback>{errors?.lowStockValue}</FormFeedback>
-              </FormGroup>
-            </Col>
-          </Row>
           <Row>
             <Col md={3}>
               <FormGroup>
@@ -327,6 +226,79 @@ function ProductModal({ variant, isOpen, toggle, onSubmit, data }) {
                   ))}
                 </Input>
                 <FormFeedback>{errors?.unitTypeId}</FormFeedback>
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={3}>
+              <FormGroup>
+                <Label for="sellingPriceField">Selling Price</Label>
+                <Input
+                  type="text"
+                  name="sellingPrice"
+                  id="sellingPriceField"
+                  placeholder="Enter Selling Price"
+                  autoComplete="off"
+                  value={values?.sellingPrice}
+                  invalid={!!errors?.sellingPrice}
+                  onChange={handleSellingPriceChange}
+                  disabled={variant === 'readonly'}
+                />
+                <FormFeedback>{errors?.sellingPrice}</FormFeedback>
+              </FormGroup>
+            </Col>
+            <Col md={3}>
+              <FormGroup>
+                <Label for="discountPerentageField">Discount Percantage</Label>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    name="discountPerentage"
+                    id="discountPerentageField"
+                    autoComplete="off"
+                    value={discountPercentage}
+                    onChange={handleDiscountChange}
+                    disabled={variant === 'readonly' || values?.sellingPrice?.length === 0 || true}
+                    maxLength="3"
+                    onInput={(event) => {
+                      event.target.value = event.target.value.replace(/\D/g, '');
+                      event.target.value = event.target.value <= 100 ? event.target.value : 0;
+                      event.target.value = event.target.value.length > 0 ? parseInt(event.target.value, 10) : '';
+                    }}
+                    onKeyPress={(event) => {
+                      if (!/[0-9]/.test(event.key)) {
+                        event.preventDefault();
+                      }
+                    }}
+                  />
+                  <InputGroupText
+                    style={{
+                      borderTopRightRadius: '8px',
+                      borderTopLeftRadius: '0px',
+                      borderBottomRightRadius: '8px',
+                      borderBottomLeftRadius: '0px',
+                    }}
+                  >
+                    %
+                  </InputGroupText>
+                </InputGroup>
+              </FormGroup>
+            </Col>
+            <Col md={3}>
+              <FormGroup>
+                <Label for="discountPriceField">Discount Price</Label>
+                <Input
+                  type="text"
+                  name="discountPrice"
+                  id="discountPriceField"
+                  placeholder="Enter Discount Price"
+                  autoComplete="off"
+                  value={values?.discountPrice}
+                  invalid={!!errors?.discountPrice}
+                  onChange={handleChange}
+                  disabled={variant === 'readonly' || true}
+                />
+                <FormFeedback>{errors?.discountPrice}</FormFeedback>
               </FormGroup>
             </Col>
           </Row>

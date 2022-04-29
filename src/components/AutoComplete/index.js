@@ -1,14 +1,11 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable react/no-unstable-nested-components */
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Input, Spinner } from 'reactstrap';
 import classNames from 'classnames';
-import { clearSearchProduct } from '../../redux';
-import styles from '../../components/Tables/Tables.module.scss';
+import styles from '../Tables/Tables.module.scss';
 
-function AutoComplete({ minLength = 0, options, labelKey = 'name', onClick, onInput, placeholder = '', loading }) {
-  const dispatch = useDispatch();
+function AutoComplete({ minLength = 0, options, labelKey = 'name', onClick, onInput, placeholder = '', loading, maxLength = 50 }) {
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
   const [input, setInput] = useState('');
@@ -39,7 +36,6 @@ function AutoComplete({ minLength = 0, options, labelKey = 'name', onClick, onIn
     setFilteredOptions([]);
     setInput('');
     setShowOptions(false);
-    dispatch(clearSearchProduct());
   };
 
   function OptionsListComponent() {
@@ -71,6 +67,7 @@ function AutoComplete({ minLength = 0, options, labelKey = 'name', onClick, onIn
         value={input}
         placeholder={placeholder}
         autoComplete="off"
+        maxLength={maxLength}
       />
       {loading ? (
         <Spinner style={{ width: '1.5rem', height: '1.5rem', position: 'absolute', right: '6px', top: '6px', cursor: 'text' }} />

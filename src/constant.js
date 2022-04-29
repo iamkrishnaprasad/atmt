@@ -5,7 +5,7 @@ export const EMAIL_REGEX = `/^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})
 export const BRANCH_INITIAL_VALUE = {
   id: '',
   name: '',
-  altname: '',
+  altName: '',
   buildingno: '',
   streetno: '',
   district: '',
@@ -55,7 +55,7 @@ export const PAYMENT_TERM_INITIAL_VALUE = {
 export const CLIENT_INITIAL_VALUE = {
   id: '',
   name: '',
-  altname: '',
+  altName: '',
   type: '',
   buildingno: '',
   streetno: '',
@@ -75,7 +75,7 @@ export const CLIENT_INITIAL_VALUE = {
 export const VENDOR_INITIAL_VALUE = {
   id: '',
   name: '',
-  altname: '',
+  altName: '',
   buildingno: '',
   streetno: '',
   district: '',
@@ -103,10 +103,9 @@ export const UNIT_TYPE_INITIAL_VALUE = {
 
 export const PRODUCT_INITIAL_VALUE = {
   name: '',
-  altname: '',
+  altName: '',
   sellingPrice: '',
   discountPrice: '',
-  lowStockValue: '',
   vatPercentageId: '',
   brandId: '',
   categoryId: '',

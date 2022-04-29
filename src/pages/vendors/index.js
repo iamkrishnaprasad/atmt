@@ -84,7 +84,7 @@ function VendorsPage() {
                       <td>{(currentPage - 1) * pageSize + (index + 1)}</td>
                       <td className={styles.textAlignLeft}>
                         {item?.name}
-                        {item?.altname ? ` / ${item?.altname}` : null}
+                        {item?.altName ? ` / ${item?.altName}` : null}
                       </td>
                       <td>{item?.phone ? `+966 ${item?.phone}` : '-'}</td>
                       <td>{item?.landline ? `+966 ${item?.landline}` : '-'}</td>

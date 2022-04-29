@@ -125,20 +125,20 @@ function ClientModal({ variant, isOpen, toggle, onSubmit, data }) {
           <Row>
             <Col md={8}>
               <FormGroup>
-                <Label for="altnameField">Name (in arabic)</Label>
+                <Label for="altNameField">Name (in arabic)</Label>
                 <Input
                   type="text"
-                  name="altname"
-                  id="altnameField"
+                  name="altName"
+                  id="altNameField"
                   placeholder="Enter Name (in arabic)"
                   autoComplete="off"
-                  value={values?.altname}
-                  invalid={!!errors?.altname}
+                  value={values?.altName}
+                  invalid={!!errors?.altName}
                   onChange={handleChange}
                   disabled={variant === 'readonly'}
                   maxLength="80"
                 />
-                <FormFeedback>{errors?.altname}</FormFeedback>
+                <FormFeedback>{errors?.altName}</FormFeedback>
               </FormGroup>
             </Col>
           </Row>

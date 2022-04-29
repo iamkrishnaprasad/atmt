@@ -23,6 +23,7 @@ export const clearSearchProduct = () => ({
 });
 
 export const searchProduct = (payload) => (dispatch) => {
+  dispatch(clearSearchProduct());
   dispatch(searchProductRequest());
   axios
     .post(`/api/v1/products/search`, payload, { headers: { 'x-auth-token': getToken() } })
