@@ -97,11 +97,11 @@ function Sidebar() {
                   link: '/vendors',
                   index: 'vendors',
                 },
-                // {
-                //   header: 'Purchase Order',
-                //   link: '/purchaseorder',
-                //   index: 'purchaseorder',
-                // },
+                {
+                  header: 'Purchase Order',
+                  link: '/purchaseorder',
+                  index: 'purchaseorder',
+                },
               ]}
             />
             <LinksGroup

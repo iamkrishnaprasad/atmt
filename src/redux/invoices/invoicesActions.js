@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getToken } from '../../services/authServices';
+import { fetchProducts } from '../products/productsActions';
 import {
   FETCH_INVOICES_REQUEST,
   FETCH_INVOICES_SUCCESS,
@@ -34,6 +35,7 @@ export const fetchInvoices = () => (dispatch) => {
     .then((response) => {
       dispatch(fetchInvoicesSuccess(response.data));
       toast.success(response.message);
+      dispatch(fetchProducts());
     })
     .catch((error) => {
       dispatch(fetchInvoicesFailure(error.response.data.message));

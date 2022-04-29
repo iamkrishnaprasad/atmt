@@ -23,7 +23,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import Moment from 'moment';
 import { searchProduct } from '../../redux';
 import styles from '../../components/Tables/Tables.module.scss';
-import AutoComplete from './AutoComplete';
+import AutoComplete from '../../components/AutoComplete';
 import validate from './validateInfo';
 import { getUserBranchId } from '../../services/profile';
 import toFormattedNumber from '../../utils/general';
@@ -98,7 +98,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
   };
 
   const searchKeyword = (keyword) => {
-    dispatch(searchProduct({ keyword }));
+    dispatch(searchProduct({ keyword, stockCheck: true, isActive: true }));
   };
 
   useEffect(() => {
@@ -190,6 +190,8 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
         return item;
       })
     );
+    document.getElementById(`discountPriceField-${id}`).focus();
+    document.getElementById('searchInputField').focus();
   };
 
   const checkDiscountPrice = (e, id) => {
@@ -200,8 +202,9 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
           if (Number.isNaN(value) || value === '') {
             return { ...item, [name]: 0 };
           }
-          if (item.marginPrice < parseFloat(value)) {
-            return { ...item, [name]: parseFloat(item.marginPrice) };
+          const marginPrice = Number(((Number(item.marginPrice) * Number(item.sellingPrice)) / Number(item.unitSellingPrice)).toFixed(4));
+          if (marginPrice < parseFloat(value)) {
+            return { ...item, [name]: parseFloat(marginPrice) };
           }
           return { ...item, [name]: parseFloat(value) };
         }
@@ -582,7 +585,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                     onChange={handleChange}
                     disabled={variant === 'readonly'}
                   >
-                    <option value="-1">Select client</option>
+                    <option value="-1">Select Client</option>
                     {clients.map((client) => (
                       <option value={client?.id} key={client?.id}>
                         {`${client?.name}${client?.vatno ? ` - ${client?.vatno}` : ''}`}
@@ -605,7 +608,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                     onChange={handleChange}
                     disabled={variant === 'readonly'}
                   >
-                    <option value="-1">Select payment term</option>
+                    <option value="-1">Select Payment Term</option>
                     {paymentTerms.map((paymentTerm) => (
                       <option value={paymentTerm.id} key={paymentTerm.id}>
                         {paymentTerm.name}
@@ -637,9 +640,10 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
             <Row>
               <Col>
                 <FormGroup>
+                  <Label for="searchField">Search Product</Label>
                   <AutoComplete
                     id="searchField"
-                    placeholder="Search Product"
+                    placeholder="Enter Product Name or Code"
                     minLength={2}
                     labelKey="name"
                     onClick={addItem}
@@ -709,7 +713,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 <Input
                                   type="text"
                                   name="sellingPrice"
-                                  id="sellingPriceField"
+                                  id={`sellingPriceField-${item?.productId}`}
                                   autoComplete="off"
                                   value={item?.sellingPrice}
                                   className={styles.textAlignRight}
@@ -721,7 +725,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 <Input
                                   type="text"
                                   name="discountPrice"
-                                  id="discountPriceField"
+                                  id={`discountPriceField-${item?.productId}`}
                                   autoComplete="off"
                                   value={item?.discountPrice}
                                   className={styles.textAlignRight}
@@ -733,7 +737,7 @@ function InvoiceModal({ variant, isOpen, toggle, onSubmit, data }) {
                                 <Input
                                   type="text"
                                   name="quantity"
-                                  id="quantityField"
+                                  id={`quantityField-${item?.productId}`}
                                   autoComplete="off"
                                   className={styles.textAlignRight}
                                   value={item?.quantity}

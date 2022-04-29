@@ -1,9 +1,6 @@
 import React from 'react';
-import { PDFDownloadLink } from '@react-pdf/renderer';
 import Moment from 'moment';
-import { Spinner } from 'reactstrap';
 import styles from '../../components/Tables/Tables.module.scss';
-import Template from '../../pdf/Template';
 import toFormattedNumber from '../../utils/general';
 
 function TableHead() {
@@ -13,12 +10,12 @@ function TableHead() {
         <th style={{ width: '5%' }}>SR NO.</th>
         <th style={{ width: '6%' }}>ORDER NO.</th>
         <th style={{ width: '9%' }}>INVOICE NO.</th>
-        <th style={{ width: '23%' }} className={styles.textAlignLeft}>
+        <th style={{ width: '22%' }} className={styles.textAlignLeft}>
           BILLED TO
         </th>
-        <th style={{ width: '10%' }}>REF No.</th>
+        <th style={{ width: '10%' }}>REF. No.</th>
         <th style={{ width: '11%' }}>PAYMENT TERM</th>
-        <th style={{ width: '10%' }}>CREATED ON</th>
+        <th style={{ width: '11%' }}>CREATED ON</th>
         <th style={{ width: '5%' }}>NO. OF ITEMS</th>
         <th style={{ width: '8%' }} className={styles.textAlignRight}>
           TOTAL TAX
@@ -41,7 +38,7 @@ const TableBody = React.memo(({ currentPage, pageSize, data, onClickOpen }) => (
         <td>{item?.orderNo}</td>
         <td className={styles.textAlignLeft}>
           {item?.client?.name}
-          {item?.client?.altname ? ` / ${item?.client?.altname}` : null}
+          {item?.client?.altName ? ` / ${item?.client?.altName}` : null}
         </td>
         <td>{item?.refNo.length ? item?.refNo : '-'}</td>
         <td>{item?.paymentTerm}</td>

@@ -74,21 +74,21 @@ function BranchModal({ variant, isOpen, toggle, onSubmit, data }) {
             <FormFeedback>{errors.name}</FormFeedback>
           </FormGroup>
           <FormGroup>
-            <Label for="altnameField">Branch Name (in arabic)</Label>
+            <Label for="altNameField">Branch Name (in arabic)</Label>
             <Input
               type="text"
-              name="altname"
-              id="altnameField"
+              name="altName"
+              id="altNameField"
               placeholder="Enter Branch Name"
               autoCapitalize="off"
               autoComplete="off"
-              value={values?.altname}
-              invalid={!!errors?.altname}
+              value={values?.altName}
+              invalid={!!errors?.altName}
               onChange={handleChange}
               disabled={variant === 'readonly'}
               maxLength="50"
             />
-            <FormFeedback>{errors.altname}</FormFeedback>
+            <FormFeedback>{errors.altName}</FormFeedback>
           </FormGroup>
           <Row>
             <Col md={6}>

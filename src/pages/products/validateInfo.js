@@ -11,10 +11,6 @@ export default function validateInfo(values, variant = '') {
     errors.sellingPrice = 'Selling price is required.';
   }
 
-  if (!values?.lowStockValue?.toString()?.trim()) {
-    errors.lowStockValue = 'Low stock alert value is required.';
-  }
-
   if (!values?.vatPercentageId?.trim() || values?.vatPercentageId?.trim() === '-1') {
     errors.vatPercentageId = 'VAT Percentage is required.';
   }
