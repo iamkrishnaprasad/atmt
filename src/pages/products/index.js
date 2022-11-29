@@ -125,19 +125,20 @@ function ProductsPage() {
               <Table className={classNames('table-striped table-borderless table-hover', styles.textAlignCenter)} responsive>
                 <thead>
                   <tr>
-                    <th style={{ width: '7%' }}>SR NO.</th>
+                    <th style={{ width: '5%' }}>SR NO.</th>
                     <th style={{ width: '5%' }}>CODE</th>
                     <th style={{ width: '23%' }} className={styles.textAlignLeft}>
                       NAME
                     </th>
-                    <th>BRAND</th>
-                    <th>CATEGORY</th>
+                    <th style={{ width: '7%' }}>BRAND</th>
+                    <th style={{ width: '5%' }}>CATEGORY</th>
                     <th className={styles.textAlignRight}>UNIT PRICE</th>
-                    <th>VAT %</th>
-                    <th>STOCK</th>
+                    <th className={styles.textAlignRight}>VAT %</th>
+                    <th className={styles.textAlignRight}>STOCK</th>
+                    <th className={styles.textAlignRight}>TOTAL STOCK VALUE</th>
                     <th>IS ACTIVE?</th>
                     {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
-                      <th style={{ width: '15%' }}>ACTIONS</th>
+                      <th style={{ width: '5%' }}>ACTIONS</th>
                     ) : null}
                   </tr>
                 </thead>
@@ -160,8 +161,17 @@ function ProductsPage() {
                         <td>{getBrandNameById(item.brandId)}</td>
                         <td>{getCategoryNameById(item.categoryId)}</td>
                         <td className={styles.textAlignRight}>{`${toFormattedNumber(item?.sellingPrice)} SAR`}</td>
-                        <td>{getVATPercentageById(item?.vatPercentageId)} %</td>
-                        <td>{toFormattedNumber(item?.stockQty)}</td>
+                        <td className={styles.textAlignRight}>{getVATPercentageById(item?.vatPercentageId)} %</td>
+                        <td className={styles.textAlignRight}>{toFormattedNumber(item?.stockQty)}</td>
+                        <td className={styles.textAlignRight}>
+                          {`${toFormattedNumber(
+                            (
+                              Number(item?.sellingPrice) *
+                              (Number(getVATPercentageById(item?.vatPercentageId) / 100) + 1) *
+                              Number(item?.stockQty)
+                            ).toFixed(2)
+                          )} SAR`}
+                        </td>
                         {item?.isActive ? <td className={styles.isActiveYes}>Yes</td> : <td className={styles.isActiveNo}>No</td>}
                         {profile?.userRoleId === 'USRRL00001' || profile?.userRoleId === 'USRRL00002' ? (
                           <td>
